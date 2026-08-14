@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>世界遺産 早押しバトル</title>
+<style>
+:root{
+  --bg:#07111f; --panel:#0e1d31; --panel2:#132743; --text:#f5f7fb; --muted:#a9b7c9;
+  --accent:#5eead4; --accent2:#60a5fa; --danger:#fb7185; --ok:#34d399; --gold:#fbbf24;
+  --shadow:0 18px 50px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:
+radial-gradient(circle at 10% 5%,rgba(96,165,250,.16),transparent 32rem),
+radial-gradient(circle at 95% 0%,rgba(94,234,212,.12),transparent 28rem),var(--bg);
+color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif}
+button{font:inherit}
+.wrap{max-width:980px;margin:auto;padding:20px 16px 32px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.brand{font-weight:900;letter-spacing:.02em}.badge{font-size:12px;color:var(--accent);border:1px solid rgba(94,234,212,.35);border-radius:999px;padding:5px 9px}
+.card{background:linear-gradient(180deg,rgba(19,39,67,.94),rgba(14,29,49,.96));border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);border-radius:24px;padding:22px}
+.hidden{display:none!important}
+.hero{text-align:center;padding:32px 18px}
+.hero h1{font-size:clamp(32px,7vw,58px);line-height:1.02;margin:8px 0 14px}
+.hero p{color:var(--muted);line-height:1.7;margin:0 auto 24px;max-width:650px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:auto}
+.primary,.secondary,.buzz,.choice,.smallbtn{border:0;border-radius:16px;cursor:pointer;transition:.12s transform,.12s opacity,.12s border-color}
+.primary{padding:17px 20px;background:linear-gradient(135deg,var(--accent),#22d3ee);color:#06211e;font-weight:900}
+.secondary{padding:17px 20px;background:#162c49;color:var(--text);font-weight:900;border:1px solid rgba(255,255,255,.1)}
+button:active{transform:scale(.98)}
+.note{margin-top:18px;color:#8292a7;font-size:12px}
+.hud{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin-bottom:12px}
+.player,.roundbox{background:rgba(7,17,31,.55);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px 14px}
+.player strong{font-size:20px}.player .score{font-size:28px;font-weight:900;margin-top:3px}.p2{text-align:right}
+.roundbox{text-align:center;min-width:140px}.roundbox b{display:block;font-size:18px}.roundbox span{color:var(--muted);font-size:12px}
+.timerbar{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:8px 0 18px}.timerfill{height:100%;width:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .1s linear}
+.qno{color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.question{font-weight:900;font-size:clamp(23px,4vw,38px);line-height:1.38;min-height:112px;display:flex;align-items:center;margin:8px 0 18px}
+.buzzgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.buzz{min-height:120px;color:white;font-size:22px;font-weight:900;border:2px solid transparent}
+.buzz1{background:linear-gradient(150deg,#1d4ed8,#2563eb)}.buzz2{background:linear-gradient(150deg,#be123c,#e11d48)}
+.buzz.solo{grid-column:1/-1;background:linear-gradient(150deg,#0f766e,#14b8a6)}
+.buzz:disabled{opacity:.35;cursor:not-allowed}
+.keys{display:block;font-size:12px;font-weight:600;opacity:.8;margin-top:8px}
+.status{text-align:center;color:var(--muted);min-height:28px;margin:12px 0 2px;font-weight:700}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.choice{padding:16px;text-align:left;background:#142b49;color:white;border:1px solid rgba(255,255,255,.09);font-weight:800;min-height:60px}
+.choice:hover{border-color:rgba(94,234,212,.55)}.choice.correct{background:rgba(52,211,153,.18);border-color:var(--ok)}.choice.wrong{background:rgba(251,113,133,.16);border-color:var(--danger)}
+.explain{margin-top:14px;padding:14px 16px;border-radius:15px;background:rgba(255,255,255,.05);color:#d7e0eb;line-height:1.6}
+.nextrow{display:flex;gap:10px;justify-content:center;margin-top:14px}.smallbtn{padding:12px 18px;background:#203a5e;color:white;font-weight:800;border:1px solid rgba(255,255,255,.1)}
+.result{text-align:center}.result h2{font-size:36px;margin:8px 0}.bigscore{font-size:64px;font-weight:950;color:var(--gold);margin:4px 0}.resultgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px auto;max-width:600px}.resultbox{padding:20px;background:rgba(255,255,255,.05);border-radius:18px}.winner{color:var(--accent);font-weight:900;font-size:20px}
+.settings{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:16px 0 22px}
+.selectwrap{background:#132743;border:1px solid rgba(255,255,255,.1);padding:9px 12px;border-radius:14px;color:var(--muted);font-size:13px}
+select{background:transparent;color:white;border:0;font:inherit;outline:none}
+.footer{text-align:center;color:#6f8198;font-size:11px;margin-top:18px;line-height:1.6}
+@media(max-width:650px){
+ .wrap{padding:12px 10px 24px}.card{padding:16px;border-radius:20px}.modes,.choices,.resultgrid{grid-template-columns:1fr}
+ .hud{grid-template-columns:1fr 1fr}.roundbox{grid-column:1/-1;grid-row:1}.player{grid-row:2}.question{min-height:130px}
+ .buzzgrid{gap:8px}.buzz{min-height:110px;font-size:20px}.hero{padding:22px 8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">WORLD HERITAGE BUZZ</div><div class="badge">完全オフライン</div></div>
+
+  <section id="home" class="card hero">
+    <div class="qno">UNOFFICIAL PRACTICE</div>
+    <h1>世界遺産<br>早押しバトル</h1>
+    <p>世界遺産検定の基礎対策向け。1人で反射神経込みの練習、または1台のスマホ・PCを使って2人で早押し対戦できます。</p>
+    <div class="settings">
+      <label class="selectwrap">問題数
+        <select id="roundCount">
+          <option value="10">10問</option><option value="20" selected>20問</option><option value="30">30問</option><option value="50">50問</option>
+        </select>
+      </label>
+      <label class="selectwrap">早押し時間
+        <select id="timeLimit">
+          <option value="5">5秒</option><option value="8" selected>8秒</option><option value="12">12秒</option><option value="0">無制限</option>
+        </select>
+      </label>
+    </div>
+    <div class="modes">
+      <button class="primary" onclick="startGame(1)">1人で練習</button>
+      <button class="secondary" onclick="startGame(2)">2人で対戦</button>
+    </div>
+    <div class="note">PC：1Pは A、2Pは L、1人モードは Space で早押し。スマホは画面のボタンをタップ。</div>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="hud">
+      <div class="player"><span id="p1name">PLAYER 1</span><div class="score" id="s1">0</div></div>
+      <div class="roundbox"><b id="round">1 / 20</b><span id="phase">早押し受付中</span></div>
+      <div class="player p2" id="p2hud"><span>PLAYER 2</span><div class="score" id="s2">0</div></div>
+    </div>
+    <div class="card">
+      <div class="timerbar"><div id="timerFill" class="timerfill"></div></div>
+      <div class="qno" id="category">WORLD HERITAGE</div>
+      <div id="question" class="question"></div>
+      <div id="buzzArea" class="buzzgrid">
+        <button id="buzz1" class="buzz buzz1" onclick="buzz(1)">PLAYER 1<span class="keys">A キー</span></button>
+        <button id="buzz2" class="buzz buzz2" onclick="buzz(2)">PLAYER 2<span class="keys">L キー</span></button>
+      </div>
+      <div id="status" class="status">早押し！</div>
+      <div id="choices" class="choices hidden"></div>
+      <div id="explain" class="explain hidden"></div>
+      <div id="nextrow" class="nextrow hidden"><button class="smallbtn" onclick="nextQuestion()">次の問題</button><button class="smallbtn" onclick="quitGame()">終了</button></div>
+    </div>
+  </section>
+
+  <section id="result" class="card result hidden">
+    <div class="qno">RESULT</div>
+    <h2 id="resultTitle">結果</h2>
+    <div id="soloResult"></div>
+    <div id="battleResult" class="resultgrid"></div>
+    <div class="nextrow"><button class="primary" onclick="restart()">同じ設定でもう一度</button><button class="secondary" onclick="goHome()">設定に戻る</button></div>
+  </section>
+
+  <div class="footer">非公式の学習用クイズです。世界遺産検定・ユネスコの公式サイトではありません。<br>このHTMLだけで動作し、通信は行いません。</div>
+</div>
+
+<script>
+const BANK = [{"q": "世界遺産を登録する国際機関はどこ？", "a": ["ユネスコ（UNESCO）", "WTO", "IMF", "WHO"], "c": 0, "e": "世界遺産はユネスコの世界遺産条約に基づいて登録されます。"}, {"q": "世界遺産は大きく何種類に分類される？", "a": ["3種類", "4種類", "5種類", "2種類"], "c": 0, "e": "文化遺産・自然遺産・複合遺産の3種類です。"}, {"q": "文化遺産と自然遺産の両方の価値を持つ世界遺産を何という？", "a": ["総合遺産", "混成遺産", "合同遺産", "複合遺産"], "c": 3, "e": "文化・自然の両方の登録基準を満たすものは複合遺産です。"}, {"q": "世界遺産条約が採択されたのは何年？", "a": ["1945年", "1992年", "1972年", "1965年"], "c": 2, "e": "世界遺産条約は1972年にユネスコ総会で採択されました。"}, {"q": "日本が世界遺産条約を締結したのは何年？", "a": ["1985年", "2001年", "1992年", "1972年"], "c": 2, "e": "日本は1992年に世界遺産条約を締結しました。"}, {"q": "日本で最初に世界遺産に登録されたものの一つは？", "a": ["平泉", "石見銀山", "姫路城", "富士山"], "c": 2, "e": "姫路城は1993年、日本初の世界遺産登録4件の一つです。"}, {"q": "姫路城の別名は？", "a": ["青葉城", "金亀城", "白鷺城", "烏城"], "c": 2, "e": "白い城壁の美しさから「白鷺城」と呼ばれます。"}, {"q": "屋久島がある都道府県は？", "a": ["宮崎県", "長崎県", "沖縄県", "鹿児島県"], "c": 3, "e": "屋久島は鹿児島県にあります。"}, {"q": "白神山地がまたがる2県は？", "a": ["青森県・秋田県", "山形県・秋田県", "青森県・岩手県", "岩手県・秋田県"], "c": 0, "e": "白神山地は青森県と秋田県にまたがります。"}, {"q": "法隆寺地域の仏教建造物がある県は？", "a": ["京都府", "大阪府", "奈良県", "滋賀県"], "c": 2, "e": "法隆寺は奈良県斑鳩町にあります。"}, {"q": "原爆ドームがある都市は？", "a": ["呉市", "広島市", "長崎市", "岡山市"], "c": 1, "e": "原爆ドームは広島市にあります。"}, {"q": "厳島神社がある島は？", "a": ["小豆島", "宮島（厳島）", "淡路島", "佐渡島"], "c": 1, "e": "厳島神社は広島県の宮島（厳島）にあります。"}, {"q": "古都京都の文化財に含まれる寺院は？", "a": ["善光寺", "東大寺", "中尊寺", "金閣寺（鹿苑寺）"], "c": 3, "e": "鹿苑寺（金閣寺）は「古都京都の文化財」の構成資産です。"}, {"q": "古都奈良の文化財に含まれる寺院は？", "a": ["清水寺", "瑞巌寺", "東大寺", "延暦寺"], "c": 2, "e": "東大寺は「古都奈良の文化財」の構成資産です。"}, {"q": "日光の社寺がある県は？", "a": ["群馬県", "福島県", "栃木県", "茨城県"], "c": 2, "e": "日光の社寺は栃木県日光市にあります。"}, {"q": "琉球王国のグスク及び関連遺産群がある県は？", "a": ["長崎県", "沖縄県", "熊本県", "鹿児島県"], "c": 1, "e": "沖縄県に所在する文化遺産です。"}, {"q": "紀伊山地の霊場と参詣道に含まれる霊場は？", "a": ["出羽三山", "英彦山", "熊野三山", "恐山"], "c": 2, "e": "熊野三山・高野山・吉野・大峯などが含まれます。"}, {"q": "知床がある都道府県は？", "a": ["新潟県", "北海道", "青森県", "岩手県"], "c": 1, "e": "知床半島は北海道東部にあります。"}, {"q": "石見銀山遺跡とその文化的景観がある県は？", "a": ["山口県", "鳥取県", "岡山県", "島根県"], "c": 3, "e": "石見銀山は島根県大田市にあります。"}, {"q": "小笠原諸島が属する都道府県は？", "a": ["静岡県", "東京都", "沖縄県", "神奈川県"], "c": 1, "e": "小笠原諸島は行政上、東京都に属します。"}, {"q": "富士山は世界遺産のどの分類で登録されている？", "a": ["危機遺産", "複合遺産", "文化遺産", "自然遺産"], "c": 2, "e": "富士山は信仰と芸術の源泉として文化遺産に登録されています。"}, {"q": "富岡製糸場がある県は？", "a": ["群馬県", "長野県", "埼玉県", "山梨県"], "c": 0, "e": "富岡製糸場は群馬県富岡市にあります。"}, {"q": "明治日本の産業革命遺産に関連する産業は？", "a": ["漁業だけ", "絹織物だけ", "陶磁器だけ", "製鉄・製鋼、造船、石炭産業"], "c": 3, "e": "製鉄・製鋼、造船、石炭産業の発展を示す遺産群です。"}, {"q": "国立西洋美術館の設計に深く関わった建築家は？", "a": ["ミース", "ル・コルビュジエ", "ライト", "ガウディ"], "c": 1, "e": "国立西洋美術館本館はル・コルビュジエ設計です。"}, {"q": "「神宿る島」宗像・沖ノ島と関連遺産群がある県は？", "a": ["長崎県", "佐賀県", "大分県", "福岡県"], "c": 3, "e": "宗像・沖ノ島関連遺産群は福岡県にあります。"}, {"q": "長崎と天草地方の潜伏キリシタン関連遺産がまたがる主な2県は？", "a": ["福岡県・長崎県", "長崎県・佐賀県", "長崎県・熊本県", "熊本県・鹿児島県"], "c": 2, "e": "長崎県と熊本県に構成資産があります。"}, {"q": "百舌鳥・古市古墳群がある都道府県は？", "a": ["大阪府", "奈良県", "京都府", "兵庫県"], "c": 0, "e": "大阪府の堺市・羽曳野市・藤井寺市に広がります。"}, {"q": "北海道・北東北の縄文遺跡群に含まれる県ではないのは？", "a": ["青森県", "秋田県", "岩手県", "宮城県"], "c": 3, "e": "構成資産は北海道、青森県、岩手県、秋田県にあります。"}, {"q": "奄美大島、徳之島、沖縄島北部及び西表島は何遺産？", "a": ["自然遺産", "複合遺産", "文化遺産", "記憶遺産"], "c": 0, "e": "生物多様性が評価された自然遺産です。"}, {"q": "佐渡島の金山がある県は？", "a": ["福井県", "石川県", "新潟県", "富山県"], "c": 2, "e": "佐渡島は新潟県に属します。"}, {"q": "万里の長城がある国は？", "a": ["インド", "韓国", "中国", "モンゴル"], "c": 2, "e": "万里の長城は中国の文化遺産です。"}, {"q": "故宮（紫禁城）がある都市は？", "a": ["西安", "南京", "上海", "北京"], "c": 3, "e": "紫禁城は中国・北京にあります。"}, {"q": "秦の始皇帝陵で有名なものは？", "a": ["ストーンヘンジ", "兵馬俑", "モアイ", "ナスカの地上絵"], "c": 1, "e": "始皇帝陵の兵馬俑坑が世界的に有名です。"}, {"q": "タージ・マハルがある国は？", "a": ["ネパール", "パキスタン", "バングラデシュ", "インド"], "c": 3, "e": "タージ・マハルはインドのアーグラにあります。"}, {"q": "アンコール遺跡がある国は？", "a": ["カンボジア", "ラオス", "タイ", "ミャンマー"], "c": 0, "e": "アンコールはカンボジアを代表する文化遺産です。"}, {"q": "ボロブドゥール寺院遺跡群がある国は？", "a": ["ベトナム", "マレーシア", "インドネシア", "フィリピン"], "c": 2, "e": "ボロブドゥールはインドネシア・ジャワ島にあります。"}, {"q": "ハロン湾がある国は？", "a": ["カンボジア", "ベトナム", "中国", "タイ"], "c": 1, "e": "ハロン湾はベトナム北部の自然景観で知られます。"}, {"q": "アユタヤ歴史都市がある国は？", "a": ["ラオス", "ミャンマー", "タイ", "カンボジア"], "c": 2, "e": "アユタヤはタイの旧都です。"}, {"q": "シギリヤの古代都市がある国は？", "a": ["ネパール", "ブータン", "スリランカ", "インド"], "c": 2, "e": "シギリヤはスリランカの岩山上の遺跡です。"}, {"q": "ルンビニは誰の生誕地とされる？", "a": ["ムハンマド", "ブッダ", "ソクラテス", "孔子"], "c": 1, "e": "ルンビニは釈迦（ブッダ）の生誕地とされます。"}, {"q": "ペトラ遺跡がある国は？", "a": ["イラン", "トルコ", "エジプト", "ヨルダン"], "c": 3, "e": "ペトラはヨルダンの岩窟都市です。"}, {"q": "エルサレムの旧市街と城壁群はどの地域にある？", "a": ["南米", "北欧", "中東", "東南アジア"], "c": 2, "e": "エルサレムは中東に位置します。"}, {"q": "ペルセポリスがある国は？", "a": ["イラン", "イラク", "シリア", "トルコ"], "c": 0, "e": "ペルセポリスは古代ペルシア帝国の都城遺跡で、現在のイランにあります。"}, {"q": "カッパドキアで知られる国は？", "a": ["ギリシャ", "イタリア", "ジョージア", "トルコ"], "c": 3, "e": "カッパドキアはトルコ中央部にあります。"}, {"q": "イスタンブール歴史地域がある国は？", "a": ["ルーマニア", "トルコ", "ギリシャ", "ブルガリア"], "c": 1, "e": "イスタンブールはトルコ最大級の都市です。"}, {"q": "ギザのピラミッド群がある国は？", "a": ["エジプト", "スーダン", "チュニジア", "モロッコ"], "c": 0, "e": "ギザのピラミッド群はエジプトにあります。"}, {"q": "アブ・シンベル神殿を含む遺産は？", "a": ["古代テーベ", "カルタゴ遺跡", "メンフィス遺跡", "ヌビア遺跡群"], "c": 3, "e": "アブ・シンベルからフィラエまでのヌビア遺跡群に含まれます。"}, {"q": "カルタゴ遺跡がある国は？", "a": ["チュニジア", "モロッコ", "リビア", "アルジェリア"], "c": 0, "e": "古代カルタゴは現在のチュニジアにあります。"}, {"q": "セレンゲティ国立公園がある国は？", "a": ["ケニア", "南アフリカ", "ナミビア", "タンザニア"], "c": 3, "e": "セレンゲティ国立公園はタンザニアにあります。"}, {"q": "ンゴロンゴロ保全地域がある国は？", "a": ["エチオピア", "タンザニア", "ボツワナ", "ウガンダ"], "c": 1, "e": "ンゴロンゴロはタンザニア北部にあります。"}, {"q": "ヴィクトリアの滝がまたがる2国は？", "a": ["ザンビア・ジンバブエ", "ケニア・タンザニア", "南アフリカ・レソト", "ナミビア・アンゴラ"], "c": 0, "e": "ヴィクトリアの滝はザンビアとジンバブエの国境にあります。"}, {"q": "ロベン島がある国は？", "a": ["南アフリカ", "ナミビア", "モザンビーク", "マダガスカル"], "c": 0, "e": "ロベン島は南アフリカのケープタウン沖にあります。"}, {"q": "ラリベラの岩窟教会群がある国は？", "a": ["スーダン", "エリトリア", "エチオピア", "ケニア"], "c": 2, "e": "ラリベラの岩窟教会群はエチオピアにあります。"}, {"q": "メンフィスとその墓地遺跡に含まれるものは？", "a": ["ポンペイ", "ペトラ", "ギザのピラミッド群", "アクロポリス"], "c": 2, "e": "ギザのピラミッド群はメンフィスとその墓地遺跡の一部です。"}, {"q": "アテネのアクロポリスがある国は？", "a": ["スペイン", "クロアチア", "イタリア", "ギリシャ"], "c": 3, "e": "アクロポリスはギリシャの首都アテネにあります。"}, {"q": "デルフィの考古遺跡がある国は？", "a": ["北マケドニア", "アルバニア", "ギリシャ", "セルビア"], "c": 2, "e": "デルフィは古代ギリシャの聖域です。"}, {"q": "コロッセオを含むローマ歴史地区がある国は？", "a": ["スペイン", "イタリア", "フランス", "ギリシャ"], "c": 1, "e": "ローマ歴史地区はイタリアの首都ローマにあります。"}, {"q": "ポンペイの遺跡がある国は？", "a": ["フランス", "イタリア", "ギリシャ", "トルコ"], "c": 1, "e": "ポンペイはイタリア南部にあります。"}, {"q": "ヴェネツィアとその潟がある国は？", "a": ["フランス", "イタリア", "スロベニア", "クロアチア"], "c": 1, "e": "ヴェネツィアはイタリア北東部にあります。"}, {"q": "フィレンツェ歴史地区がある国は？", "a": ["ポルトガル", "オーストリア", "イタリア", "スペイン"], "c": 2, "e": "フィレンツェはイタリアのトスカーナ州にあります。"}, {"q": "ピサのドゥオモ広場で有名な建造物は？", "a": ["サグラダ・ファミリア", "エッフェル塔", "ビッグ・ベン", "ピサの斜塔"], "c": 3, "e": "ピサの斜塔はドゥオモ広場の鐘楼です。"}, {"q": "アルハンブラ宮殿がある都市は？", "a": ["セビリア", "バルセロナ", "グラナダ", "マドリード"], "c": 2, "e": "アルハンブラ宮殿はスペインのグラナダにあります。"}, {"q": "アントニ・ガウディの作品群がある都市は？", "a": ["バルセロナ", "リスボン", "パリ", "ウィーン"], "c": 0, "e": "サグラダ・ファミリアなど、ガウディ作品の多くはバルセロナにあります。"}, {"q": "サンティアゴ・デ・コンポステーラは何で有名？", "a": ["イスラム巡礼", "キリスト教巡礼", "仏教巡礼", "ヒンドゥー巡礼"], "c": 1, "e": "ヨーロッパを代表するキリスト教巡礼地です。"}, {"q": "モン・サン・ミシェルがある国は？", "a": ["ベルギー", "スペイン", "イギリス", "フランス"], "c": 3, "e": "モン・サン・ミシェルはフランス北西部にあります。"}, {"q": "ヴェルサイユ宮殿がある国は？", "a": ["フランス", "ドイツ", "ベルギー", "オーストリア"], "c": 0, "e": "ヴェルサイユ宮殿はフランスにあります。"}, {"q": "シャルトル大聖堂がある国は？", "a": ["チェコ", "ドイツ", "イタリア", "フランス"], "c": 3, "e": "シャルトル大聖堂はフランスのゴシック建築を代表します。"}, {"q": "ストーンヘンジがある国は？", "a": ["フランス", "アイルランド", "デンマーク", "イギリス"], "c": 3, "e": "ストーンヘンジはイングランド南部にあります。"}, {"q": "ウェストミンスター宮殿と寺院がある都市は？", "a": ["エディンバラ", "マンチェスター", "ロンドン", "リヴァプール"], "c": 2, "e": "ウェストミンスターはロンドン中心部にあります。"}, {"q": "ケルン大聖堂がある国は？", "a": ["オランダ", "ドイツ", "ベルギー", "スイス"], "c": 1, "e": "ケルン大聖堂はドイツにあります。"}, {"q": "アウシュヴィッツ・ビルケナウがある国は？", "a": ["ドイツ", "チェコ", "ポーランド", "オーストリア"], "c": 2, "e": "収容所跡は現在のポーランドにあります。"}, {"q": "プラハ歴史地区がある国は？", "a": ["ポーランド", "チェコ", "スロバキア", "ハンガリー"], "c": 1, "e": "プラハはチェコの首都です。"}, {"q": "ブダペストがある国は？", "a": ["クロアチア", "セルビア", "ハンガリー", "ルーマニア"], "c": 2, "e": "ブダペストはハンガリーの首都です。"}, {"q": "シェーンブルン宮殿がある都市は？", "a": ["ザルツブルク", "ウィーン", "ミュンヘン", "プラハ"], "c": 1, "e": "シェーンブルン宮殿はオーストリアのウィーンにあります。"}, {"q": "ベルン旧市街がある国は？", "a": ["フランス", "スイス", "ドイツ", "オーストリア"], "c": 1, "e": "ベルンはスイスの都市です。"}, {"q": "ドゥブロヴニク旧市街がある国は？", "a": ["アルバニア", "クロアチア", "モンテネグロ", "スロベニア"], "c": 1, "e": "ドゥブロヴニクはクロアチア南部の都市です。"}, {"q": "キエフの聖ソフィア大聖堂がある国は？", "a": ["ウクライナ", "ベラルーシ", "リトアニア", "ポーランド"], "c": 0, "e": "キーウ（キエフ）はウクライナの首都です。"}, {"q": "イエローストーン国立公園がある国は？", "a": ["メキシコ", "カナダ", "アメリカ合衆国", "チリ"], "c": 2, "e": "イエローストーンはアメリカ合衆国の国立公園です。"}, {"q": "グランド・キャニオン国立公園がある国は？", "a": ["ペルー", "アメリカ合衆国", "カナダ", "アルゼンチン"], "c": 1, "e": "グランド・キャニオンはアメリカ合衆国アリゾナ州にあります。"}, {"q": "自由の女神像がある都市は？", "a": ["ワシントンD.C.", "シカゴ", "ニューヨーク", "ボストン"], "c": 2, "e": "自由の女神像はニューヨーク港にあります。"}, {"q": "カナディアン・ロッキー山脈自然公園群がある国は？", "a": ["カナダ", "メキシコ", "アメリカ合衆国", "グリーンランド"], "c": 0, "e": "カナディアン・ロッキーはカナダにあります。"}, {"q": "チチェン・イッツァがある国は？", "a": ["ペルー", "ベリーズ", "メキシコ", "グアテマラ"], "c": 2, "e": "チチェン・イッツァはメキシコのマヤ文明遺跡です。"}, {"q": "テオティワカンがある国は？", "a": ["コロンビア", "キューバ", "ホンジュラス", "メキシコ"], "c": 3, "e": "テオティワカンはメキシコ中央部の古代都市です。"}, {"q": "ティカル国立公園がある国は？", "a": ["メキシコ", "グアテマラ", "ホンジュラス", "エルサルバドル"], "c": 1, "e": "ティカルはグアテマラのマヤ文明遺跡です。"}, {"q": "ハバナ旧市街がある国は？", "a": ["ドミニカ共和国", "キューバ", "ジャマイカ", "パナマ"], "c": 1, "e": "ハバナはキューバの首都です。"}, {"q": "マチュ・ピチュがある国は？", "a": ["ペルー", "チリ", "ボリビア", "エクアドル"], "c": 0, "e": "マチュ・ピチュはペルーのアンデス山中にあります。"}, {"q": "ナスカとパルパの地上絵がある国は？", "a": ["チリ", "ブラジル", "ペルー", "ボリビア"], "c": 2, "e": "ナスカの地上絵はペルー南部にあります。"}, {"q": "ガラパゴス諸島が属する国は？", "a": ["コロンビア", "ペルー", "エクアドル", "チリ"], "c": 2, "e": "ガラパゴス諸島はエクアドル領です。"}, {"q": "イグアスの滝が国境をなす2国は？", "a": ["ボリビア・ブラジル", "ブラジル・ペルー", "アルゼンチン・ブラジル", "チリ・アルゼンチン"], "c": 2, "e": "イグアスの滝はアルゼンチンとブラジルの国境地域にあります。"}, {"q": "ブラジリアを設計した都市計画家として有名なのは？", "a": ["エッフェル", "ガウディ", "ルシオ・コスタ", "ル・コルビュジエ"], "c": 2, "e": "ブラジリアの都市計画はルシオ・コスタ、主要建築はオスカー・ニーマイヤーが担いました。"}, {"q": "ラパ・ヌイ国立公園で有名な石像は？", "a": ["スフィンクス", "兵馬俑", "トーテムポール", "モアイ"], "c": 3, "e": "イースター島のラパ・ヌイ国立公園はモアイ像で有名です。"}, {"q": "ロス・グラシアレス国立公園がある国は？", "a": ["ウルグアイ", "ペルー", "チリ", "アルゼンチン"], "c": 3, "e": "ロス・グラシアレス国立公園はアルゼンチンのパタゴニア地方にあります。"}, {"q": "シドニー・オペラハウスがある国は？", "a": ["南アフリカ", "オーストラリア", "カナダ", "ニュージーランド"], "c": 1, "e": "シドニー・オペラハウスはオーストラリアにあります。"}, {"q": "グレート・バリア・リーフがある国は？", "a": ["インドネシア", "オーストラリア", "フィリピン", "パプアニューギニア"], "c": 1, "e": "グレート・バリア・リーフはオーストラリア北東岸沖にあります。"}, {"q": "ウルル＝カタ・ジュタ国立公園がある国は？", "a": ["オーストラリア", "ニュージーランド", "サモア", "フィジー"], "c": 0, "e": "ウルルはオーストラリア中央部にあります。"}, {"q": "テ・ワヒポウナムがある国は？", "a": ["ニュージーランド", "トンガ", "オーストラリア", "フィジー"], "c": 0, "e": "テ・ワヒポウナムはニュージーランド南島南西部の自然遺産です。"}, {"q": "世界遺産登録の価値を示す中心的な考え方は？", "a": ["顕著な普遍的価値", "建設費", "観光客数", "国内だけの人気"], "c": 0, "e": "世界遺産では「顕著な普遍的価値（OUV）」が重要です。"}, {"q": "世界遺産の登録基準はいくつある？", "a": ["12", "8", "6", "10"], "c": 3, "e": "現在の世界遺産登録基準は(i)〜(x)の10基準です。"}, {"q": "世界遺産登録基準のうち、文化遺産に主に対応するのは？", "a": ["(v)〜(x)", "(vii)〜(x)", "(i)〜(vi)", "(i)〜(iv)のみ"], "c": 2, "e": "(i)〜(vi)が文化的価値、(vii)〜(x)が自然的価値の基準です。"}, {"q": "「危機にさらされている世界遺産リスト」の主目的は？", "a": ["観光客を増やす", "入場料を統一する", "保全上の重大な危機への国際的支援を促す", "登録を自動的に抹消する"], "c": 2, "e": "危機遺産リストは重大な脅威を受ける遺産の保全を国際的に促進する仕組みです。"}, {"q": "世界遺産委員会の主な役割は？", "a": ["各国の首都を決める", "世界遺産への登録を審議する", "通貨を発行する", "国境を決める"], "c": 1, "e": "世界遺産委員会は推薦物件の登録などを審議します。"}, {"q": "文化遺産の評価でICOMOSが担う役割に近いものは？", "a": ["気象予報", "航空管制", "専門的な評価・助言", "世界銀行の融資"], "c": 2, "e": "ICOMOSは文化遺産の推薦案件について専門的評価を行う諮問機関です。"}, {"q": "自然遺産の評価に深く関わる諮問機関は？", "a": ["ILO", "IOC", "IAEA", "IUCN"], "c": 3, "e": "IUCN（国際自然保護連合）が自然遺産の評価を担います。"}, {"q": "世界遺産センターが置かれている都市は？", "a": ["ジュネーブ", "パリ", "ローマ", "ニューヨーク"], "c": 1, "e": "ユネスコ本部と世界遺産センターはパリにあります。"}, {"q": "世界遺産条約の英語名に含まれる2つの対象は？", "a": ["Language と Currency", "Cultural Heritage と Natural Heritage", "Trade と Finance", "Science と Sports"], "c": 1, "e": "条約は文化遺産と自然遺産の保護を対象とします。"}];
+let mode=1, deck=[], idx=0, maxRounds=20, scores=[0,0,0], activePlayer=0, locked=[], answered=false;
+let timer=null, timeLimit=8, startedAt=0;
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startGame(m){
+  mode=m; maxRounds=+document.getElementById('roundCount').value; timeLimit=+document.getElementById('timeLimit').value;
+  deck=shuffle([...BANK]).slice(0,Math.min(maxRounds,BANK.length)); idx=0;scores=[0,0,0];
+  document.getElementById('home').classList.add('hidden'); document.getElementById('result').classList.add('hidden'); document.getElementById('game').classList.remove('hidden');
+  document.getElementById('p2hud').classList.toggle('hidden',mode===1);
+  document.getElementById('buzz2').classList.toggle('hidden',mode===1);
+  document.getElementById('buzz1').classList.toggle('solo',mode===1);
+  document.getElementById('p1name').textContent=mode===1?'YOU':'PLAYER 1';
+  renderQuestion();
+}
+function renderQuestion(){
+  clearInterval(timer); activePlayer=0; locked=[]; answered=false;
+  const q=deck[idx];
+  document.getElementById('round').textContent=`${idx+1} / ${deck.length}`;
+  document.getElementById('phase').textContent='早押し受付中';
+  document.getElementById('question').textContent=q.q;
+  document.getElementById('status').textContent='早押し！';
+  document.getElementById('choices').innerHTML='';
+  document.getElementById('choices').classList.add('hidden');
+  document.getElementById('explain').classList.add('hidden');
+  document.getElementById('nextrow').classList.add('hidden');
+  document.getElementById('buzz1').disabled=false; document.getElementById('buzz2').disabled=false;
+  updateScores();
+  startTimer();
+}
+function startTimer(){
+  const f=document.getElementById('timerFill'); f.style.width='100%'; startedAt=Date.now();
+  if(timeLimit===0){ f.style.width='100%'; return; }
+  timer=setInterval(()=>{
+    const elapsed=(Date.now()-startedAt)/1000, left=Math.max(0,1-elapsed/timeLimit);
+    f.style.width=(left*100)+'%';
+    if(left<=0){clearInterval(timer); timeout();}
+  },100);
+}
+function timeout(){
+  if(answered || activePlayer) return;
+  document.getElementById('status').textContent='時間切れ';
+  document.getElementById('buzz1').disabled=true;document.getElementById('buzz2').disabled=true;
+  revealNoBuzz();
+}
+function buzz(p){
+  if(answered || activePlayer || locked.includes(p)) return;
+  clearInterval(timer); activePlayer=p;
+  document.getElementById('buzz1').disabled=true; document.getElementById('buzz2').disabled=true;
+  document.getElementById('phase').textContent=(mode===1?'YOU':`PLAYER ${p}`)+' 回答中';
+  document.getElementById('status').textContent=(mode===1?'あなた':`PLAYER ${p}`)+' が早押し！';
+  showChoices();
+}
+function showChoices(){
+  const q=deck[idx], box=document.getElementById('choices');box.innerHTML='';
+  q.a.forEach((x,i)=>{
+    const b=document.createElement('button'); b.className='choice';b.textContent=`${String.fromCharCode(65+i)}. ${x}`;b.onclick=()=>answer(i,b);box.appendChild(b);
+  }); box.classList.remove('hidden');
+}
+function answer(choice,btn){
+  if(answered || !activePlayer) return;
+  const q=deck[idx], buttons=[...document.querySelectorAll('.choice')];
+  if(choice===q.c){
+    scores[activePlayer]+=10; answered=true;btn.classList.add('correct');
+    buttons.forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add('correct')});
+    document.getElementById('status').textContent=`正解！ +10点`;
+    finishQuestion();
+  }else{
+    scores[activePlayer]-=5; btn.classList.add('wrong'); locked.push(activePlayer);
+    buttons.forEach(b=>b.disabled=true);
+    document.getElementById('status').textContent=`不正解… -5点`;
+    if(mode===2 && locked.length<2){
+      activePlayer=0;
+      setTimeout(()=>{
+        document.getElementById('choices').classList.add('hidden');
+        document.getElementById('phase').textContent='相手に回答権';
+        document.getElementById('status').textContent='もう一人が早押しできます';
+        document.getElementById('buzz1').disabled=locked.includes(1);
+        document.getElementById('buzz2').disabled=locked.includes(2);
+        startedAt=Date.now(); startTimer();
+      },650);
+    }else{
+      answered=true;
+      setTimeout(()=>{buttons[q.c].classList.add('correct');finishQuestion();},450);
+    }
+  }
+  updateScores();
+}
+function revealNoBuzz(){
+  answered=true; const q=deck[idx]; showChoices();
+  const buttons=[...document.querySelectorAll('.choice')];buttons.forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add('correct')});
+  finishQuestion();
+}
+function finishQuestion(){
+  clearInterval(timer); const q=deck[idx];
+  document.getElementById('phase').textContent='解答';
+  document.getElementById('explain').textContent=q.e;
+  document.getElementById('explain').classList.remove('hidden');
+  document.getElementById('nextrow').classList.remove('hidden');
+  document.getElementById('buzz1').disabled=true;document.getElementById('buzz2').disabled=true;
+}
+function nextQuestion(){if(idx+1>=deck.length){showResult()}else{idx++;renderQuestion()}}
+function updateScores(){document.getElementById('s1').textContent=scores[1];document.getElementById('s2').textContent=scores[2]}
+function showResult(){
+  clearInterval(timer);document.getElementById('game').classList.add('hidden');document.getElementById('result').classList.remove('hidden');
+  const solo=document.getElementById('soloResult'), battle=document.getElementById('battleResult');
+  if(mode===1){
+    battle.classList.add('hidden');solo.classList.remove('hidden');
+    document.getElementById('resultTitle').textContent='トレーニング終了';
+    const max=deck.length*10, pct=Math.max(0,Math.round(scores[1]/max*100));
+    solo.innerHTML=`<div class="bigscore">${scores[1]} pt</div><div style="color:var(--muted)">最高 ${max} pt</div>`;
+  }else{
+    solo.classList.add('hidden');battle.classList.remove('hidden');
+    const t=scores[1]===scores[2]?'引き分け！':`PLAYER ${scores[1]>scores[2]?1:2} WIN!`;
+    document.getElementById('resultTitle').textContent=t;
+    battle.innerHTML=`<div class="resultbox"><div>PLAYER 1</div><div class="bigscore">${scores[1]}</div></div><div class="resultbox"><div>PLAYER 2</div><div class="bigscore">${scores[2]}</div></div>`;
+  }
+}
+function restart(){startGame(mode)}
+function quitGame(){showResult()}
+function goHome(){clearInterval(timer);document.getElementById('result').classList.add('hidden');document.getElementById('game').classList.add('hidden');document.getElementById('home').classList.remove('hidden')}
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('game').classList.contains('hidden')) return;
+  if(mode===1 && e.code==='Space'){e.preventDefault();buzz(1)}
+  if(mode===2 && e.key.toLowerCase()==='a')buzz(1);
+  if(mode===2 && e.key.toLowerCase()==='l')buzz(2);
+  if(!document.getElementById('choices').classList.contains('hidden') && activePlayer && !answered){
+    const n=['1','2','3','4'].indexOf(e.key); if(n>=0){const b=document.querySelectorAll('.choice')[n];if(b&&!b.disabled)answer(n,b)}
+  }
+  if(answered && e.key==='Enter')nextQuestion();
+});
+</script>
+</body></html>

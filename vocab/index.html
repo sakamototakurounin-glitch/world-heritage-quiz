@@ -1,152 +1,132 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
-  <title>VocabStar - Offline English Vocabulary</title>
-  <link rel="manifest" href="manifest.webmanifest" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <title>VocabStar</title>
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
-    :root{
-      --bg:#f6f7fb;--card:#fff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;
-      --accent:#2563eb;--accent-soft:#eff6ff;--danger:#dc2626;--star:#f59e0b;--green:#16a34a
-    }
+    :root{--bg:#f6f7fb;--card:#fff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;--accent:#2563eb;--accentSoft:#eff6ff;--danger:#dc2626;--star:#f59e0b}
     *{box-sizing:border-box}
     html,body{max-width:100%;overflow-x:hidden}
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
     button,input,textarea,select{font:inherit;max-width:100%}
     button{touch-action:manipulation}
-    .app{width:100%;max-width:1100px;margin:auto;padding:16px}
-    .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .app{width:100%;max-width:1080px;margin:auto;padding:14px}
+    .top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
     .brand{font-size:24px;font-weight:850}
-    .muted{color:var(--sub);font-size:13px}
-    .grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:14px}
-    .card{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
+    .muted{color:var(--sub);font-size:12px}
+    .grid{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;margin-top:12px}
+    .card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:0 2px 10px rgba(0,0,0,.035)}
+    .row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;min-width:0}
     .grow{flex:1;min-width:0}
-    .btn{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
-    .btn:hover{background:#f9fafb}
-    .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+    .btn{border:1px solid var(--line);background:#fff;padding:8px 11px;border-radius:10px;cursor:pointer;white-space:nowrap}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
     .btn.danger{color:var(--danger)}
-    .btn.small{padding:5px 8px;font-size:12px}
-    .input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:white}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;min-width:0}
-    .stats{display:flex;gap:8px;flex-wrap:wrap}
-    .pill{background:#f3f4f6;border-radius:999px;padding:6px 10px;font-size:12px}
-    .file-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-    .file-item{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}
-    .file-item.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-    .file-main{display:flex;align-items:center;gap:6px}
-    .file-open{flex:1;border:0;background:transparent;text-align:left;padding:5px 4px;cursor:pointer;min-width:0}
-    .file-name{font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .file-actions{display:flex;gap:4px}
-    .icon-btn{border:0;background:transparent;padding:5px 6px;border-radius:8px;color:var(--sub);cursor:pointer}
-    .icon-btn:hover{background:#f3f4f6}
-    .star-views{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:5px}
-    .star-view{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 8px;font-size:12px;text-align:left;cursor:pointer}
-    .star-view.active{border-color:var(--star);background:#fffbeb}
-    .star-view b{color:#b45309}
-    .mode-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;padding:4px 8px;border-radius:999px}
-    .sticky-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .table-wrap{width:100%;overflow:auto}
-    .word-table{width:100%;border-collapse:collapse;min-width:700px}
-    .word-table th,.word-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+    .btn.small{padding:5px 7px;font-size:12px}
+    .iconbtn{border:0;background:transparent;border-radius:8px;padding:5px 7px;cursor:pointer;color:var(--sub)}
+    .iconbtn:hover{background:#f3f4f6}
+    .input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff}
+    .sectionTitle{font-weight:800;margin:0 0 7px}
+    .fileSelectRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+    #fileSelect{font-weight:700}
+    .subhead{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+    .listScroller{display:flex;flex-direction:column;gap:7px;margin-top:7px}
+    .listBtn{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;cursor:pointer}
+    .listBtn.active{border-color:var(--accent);background:var(--accentSoft)}
+    .listTitle{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .listMeta{font-size:11px;color:var(--sub);margin-top:2px}
+    .autoViews{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+    .autoBtn{border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:8px 7px;text-align:left;cursor:pointer}
+    .autoBtn.active{box-shadow:0 0 0 1px var(--star) inset}
+    .autoBtn b{color:#a16207}
+    .help{font-size:11px;color:var(--sub);line-height:1.55;margin-top:8px}
+    .stickyActions{display:flex;gap:7px;flex-wrap:wrap}
+    .toolbar{display:flex;gap:7px;margin:9px 0}
+    .stats{display:flex;gap:6px;flex-wrap:wrap}
+    .pill{font-size:11px;padding:5px 8px;background:#f3f4f6;border-radius:999px}
+    .modeBadge{display:inline-flex;font-size:11px;padding:4px 7px;border-radius:999px;background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+    .hidden{display:none!important}
+    .tableWrap{width:100%;overflow:auto;margin-top:8px}
+    table{width:100%;border-collapse:collapse;min-width:650px}
+    th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
     .word{font-weight:800;overflow-wrap:anywhere}
     .jp{color:#374151;overflow-wrap:anywhere}
-    .example{font-size:12px;color:var(--sub);max-width:360px;overflow-wrap:anywhere}
-    .stars button{border:none;background:transparent;font-size:20px;cursor:pointer;padding:1px}
+    .example{font-size:12px;color:var(--sub);max-width:330px;overflow-wrap:anywhere}
+    .wordHead{display:flex;align-items:center;gap:4px}
+    .audioBtn{border:0;background:#f3f4f6;border-radius:999px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+    .audioBtn:active{transform:scale(.96)}
+    .stars{white-space:nowrap}
+    .stars button{border:0;background:transparent;font-size:20px;padding:0 1px;cursor:pointer}
     .star-on{color:var(--star)}.star-off{color:#d1d5db}
-    dialog{border:none;border-radius:16px;padding:0;max-width:760px;width:calc(100% - 24px)}
+    .empty{padding:26px;text-align:center;color:var(--sub)}
+    dialog{border:0;border-radius:16px;padding:0;width:calc(100% - 20px);max-width:720px}
     dialog::backdrop{background:rgba(0,0,0,.38)}
-    .modal{padding:16px;max-height:90dvh;overflow:auto}
-    .modal h2{margin-top:0}
-    .help{font-size:12px;color:var(--sub);line-height:1.6}
-    .hidden{display:none!important}
-    .empty{padding:28px;text-align:center;color:var(--sub)}
-    .testbox{padding:24px;text-align:center}
-    .sentence{font-size:24px;line-height:1.5;margin:20px 0;overflow-wrap:anywhere}
-    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .choice{padding:14px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;text-align:left;overflow-wrap:anywhere}
+    .modal{padding:15px;max-height:90dvh;overflow:auto}
+    .modal h2{margin:0 0 10px}
+    .flashCard{height:320px;perspective:1000px;cursor:pointer;user-select:none;margin-top:10px}
+    .flashInner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .35s}
+    .flashCard.flipped .flashInner{transform:rotateY(180deg)}
+    .flashFace{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:20px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center;box-shadow:0 8px 22px rgba(0,0,0,.07)}
+    .flashBack{transform:rotateY(180deg)}
+    .flashWord{font-size:34px;font-weight:850;overflow-wrap:anywhere}
+    .flashJp{font-size:25px;font-weight:750;line-height:1.4}
+    .flashEx{font-size:14px;color:var(--sub);line-height:1.55;margin-top:15px}
+    .flashHint{position:absolute;bottom:14px;font-size:11px;color:var(--sub)}
+    .flashAudio{position:absolute;top:14px;right:14px;width:42px;height:42px;font-size:20px}
+    .flashControls{display:grid;grid-template-columns:auto 1fr auto;gap:7px;align-items:center;margin-top:10px}
+    .flashProgress{text-align:center;color:var(--sub);font-size:12px}
+    .flashStarbar{display:flex;justify-content:center;gap:5px;margin-top:8px}
+    .flashStarbar button{font-size:27px;border:0;background:transparent;cursor:pointer}
+    .autoSpeakRow{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .switchRow{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--sub)}
+    .sentence{font-size:22px;line-height:1.5;margin:18px 0;text-align:center}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .choice{padding:12px;border:1px solid var(--line);background:#fff;border-radius:11px;text-align:left;cursor:pointer}
     .choice.correct{border-color:#16a34a;background:#f0fdf4}
     .choice.wrong{border-color:#dc2626;background:#fef2f2}
-    .flash-wrap{padding:10px 0 2px}
-    .flash-card{height:320px;perspective:1000px;cursor:pointer;user-select:none}
-    .flash-inner{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
-    .flash-card.flipped .flash-inner{transform:rotateY(180deg)}
-    .flash-face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:20px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.07)}
-    .flash-back{transform:rotateY(180deg)}
-    .flash-word{font-size:34px;font-weight:850;overflow-wrap:anywhere}
-    .flash-jp{font-size:25px;font-weight:750;line-height:1.4}
-    .flash-example{font-size:15px;color:var(--sub);line-height:1.6;margin-top:18px}
-    .flash-hint{position:absolute;bottom:16px;color:var(--sub);font-size:12px}
-    .flash-controls{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:12px}
-    .flash-progress{text-align:center;color:var(--sub);font-size:13px}
-    .flash-starbar{display:flex;justify-content:center;gap:6px;margin-top:10px}
-    .flash-starbar button{font-size:26px;border:0;background:transparent;cursor:pointer}
-    .scope-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}
-    .scope-tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;cursor:pointer}
-    .scope-tab.active{border-color:var(--accent);background:var(--accent-soft);color:#1d4ed8;font-weight:700}
-    .file-note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.55}
 
     @media(max-width:800px){
       body{background:#fff}
-      .app{padding:10px 10px calc(18px + env(safe-area-inset-bottom))}
-      .top{padding:2px 2px 4px;gap:8px}
+      .app{padding:9px 8px calc(16px + env(safe-area-inset-bottom))}
+      .top{gap:6px}
       .brand{font-size:22px}
-      .top>div:first-child .muted{display:none}
+      .top .muted{display:none}
       .top>.row{margin-left:auto;flex-wrap:nowrap}
-      .top .btn{padding:7px 9px;font-size:12px}
-      .grid{display:block;margin-top:8px}
-      aside.card{padding:10px;margin-bottom:10px}
-      main.card{padding:10px;border-radius:14px}
-      .file-list{flex-direction:row;overflow-x:auto;gap:8px;padding:3px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-      .file-list::-webkit-scrollbar{display:none}
-      .file-item{min-width:185px;flex:0 0 auto;padding:7px}
-      .file-actions{display:none}
-      .star-view{padding:6px 7px}
-      .file-note{display:none}
-      main.card>.row:first-child{align-items:flex-start}
-      #deckTitle{font-size:20px!important;overflow-wrap:anywhere}
-      .sticky-actions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
-      .sticky-actions .btn{width:100%;padding:10px 5px;font-size:13px}
-      .toolbar{display:block}
-      #searchInput{min-width:0!important;width:100%;font-size:16px}
-      .stats{gap:6px}
-      .pill{padding:5px 8px;font-size:11px}
-      .table-wrap{overflow:visible;margin-top:8px!important}
-      .word-table{display:block;min-width:0;width:100%;border-collapse:separate}
-      .word-table thead{display:none}
-      .word-table tbody{display:block;width:100%}
-      .word-table tr{display:grid;width:100%;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;border:1px solid var(--line);border-radius:13px;padding:10px;margin:0 0 8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.025)}
-      .word-table td{display:block;width:auto;min-width:0;border:0;padding:0;text-align:left}
-      .word-table td:nth-child(1){grid-column:1;grid-row:1}
-      .word-table td:nth-child(2){grid-column:1;grid-row:2;font-size:14px;margin-top:1px}
-      .word-table td:nth-child(3){grid-column:1 / -1;grid-row:3;margin-top:5px;padding-top:6px;border-top:1px dashed var(--line);line-height:1.45}
-      .word-table td:nth-child(4){grid-column:2;grid-row:1 / span 2;align-self:center;white-space:nowrap}
-      .word-table td:nth-child(5){grid-column:2;grid-row:3;align-self:end;justify-self:end}
-      .word{font-size:17px;line-height:1.25}
-      .example{font-size:12px;max-width:none}
-      .stars button{font-size:22px;padding:0 1px}
-      .word-table .btn.small{padding:4px 7px;font-size:11px}
+      .top .btn{padding:6px 8px;font-size:12px}
+      .grid{display:block;margin-top:7px}
+      aside.card{padding:9px;margin-bottom:9px}
+      main.card{padding:9px}
+      .help{display:none}
+      .listScroller{flex-direction:row;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+      .listScroller::-webkit-scrollbar{display:none}
+      .listBtn{min-width:130px;max-width:180px;flex:0 0 auto}
+      .autoViews{margin-top:6px}
+      #deckTitle{font-size:20px!important}
+      .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
+      .stickyActions .btn{width:100%;padding:9px 4px;font-size:12px}
+      #searchInput{font-size:16px}
+      .tableWrap{overflow:visible}
+      table{display:block;min-width:0;width:100%}
+      thead{display:none}
+      tbody{display:block}
+      tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 7px;border:1px solid var(--line);border-radius:12px;padding:9px;margin-bottom:7px}
+      td{display:block;border:0;padding:0;min-width:0}
+      td:nth-child(1){grid-column:1;grid-row:1}
+      td:nth-child(2){grid-column:1;grid-row:2;font-size:14px}
+      td:nth-child(3){grid-column:1/-1;grid-row:3;border-top:1px dashed var(--line);padding-top:5px;margin-top:3px}
+      td:nth-child(4){grid-column:2;grid-row:1/3;align-self:center}
+      td:nth-child(5){grid-column:2;grid-row:3;justify-self:end;align-self:end}
+      .word{font-size:17px}
+      .example{max-width:none}
+      .audioBtn{width:28px;height:28px}
       .choices{grid-template-columns:1fr}
-      .sentence{font-size:19px;margin:16px 0}
-      .testbox{padding:16px 2px}
-      .choice{padding:12px}
-      dialog{width:calc(100% - 16px);border-radius:14px}
-      .modal{padding:14px}
-      textarea,input{font-size:16px}
-      #testDialog .row select{flex:1;min-width:0;width:auto!important}
-      .flash-card{height:300px}
-      .flash-word{font-size:31px}
-      .flash-jp{font-size:22px}
-      .flash-face{padding:20px}
-    }
-    @media(max-width:390px){
-      .app{padding-left:7px;padding-right:7px}
-      .card{padding:9px}
-      .btn{padding-left:8px;padding-right:8px}
-      .sticky-actions .btn{font-size:12px}
-      .file-item{min-width:175px}
+      .sentence{font-size:19px}
+      .flashCard{height:300px}
+      .flashWord{font-size:31px}
+      .flashJp{font-size:22px}
+      input,textarea,select{font-size:16px}
     }
   </style>
 </head>
@@ -159,35 +139,48 @@
 
   <div class="grid">
     <aside class="card">
-      <div class="row"><b>単語帳ファイル</b><button class="btn small primary" id="addDeckBtn">＋ファイル</button></div>
-      <div class="file-list" id="deckList"></div>
-      <div class="file-note">各ファイルに「★1」「★★」の自動ビューが付きます。星を変更すると件数も自動更新されます。</div>
+      <div class="sectionTitle">ファイル</div>
+      <div class="fileSelectRow">
+        <select id="fileSelect"></select>
+        <button class="btn small primary" id="addFileBtn">＋</button>
+      </div>
+      <div class="row" style="justify-content:flex-end;margin-top:5px">
+        <button class="iconbtn" id="renameFileBtn">名前変更</button>
+        <button class="iconbtn" id="deleteFileBtn">削除</button>
+      </div>
+
+      <div class="subhead">
+        <b>単語帳リスト</b>
+        <button class="btn small" id="addListBtn">＋単語帳</button>
+      </div>
+      <div class="listScroller" id="listScroller"></div>
+
+      <div class="autoViews">
+        <button class="autoBtn" id="fileStar1Btn"><b>★1 統合</b><div class="listMeta" id="star1Count"></div></button>
+        <button class="autoBtn" id="fileStar2Btn"><b>★★ 統合</b><div class="listMeta" id="star2Count"></div></button>
+      </div>
+      <div class="help">★1/★★は、現在のファイル内にあるすべての単語帳から自動でまとめられます。</div>
     </aside>
 
     <main class="card">
       <div class="row">
         <div class="grow">
-          <div class="row" style="gap:6px">
-            <h2 id="deckTitle" style="margin:0 0 4px">単語帳</h2>
-            <span class="mode-badge hidden" id="modeBadge"></span>
+          <div class="row">
+            <h2 id="deckTitle" style="margin:0">単語帳</h2>
+            <span class="modeBadge hidden" id="modeBadge"></span>
           </div>
           <div class="muted" id="deckMeta"></div>
         </div>
-        <div class="sticky-actions">
+        <div class="stickyActions">
           <button class="btn" id="importBtn">インポート</button>
           <button class="btn" id="flashBtn">カード</button>
           <button class="btn primary" id="testBtn">4択</button>
         </div>
       </div>
-
-      <div class="toolbar">
-        <input class="input grow" style="min-width:200px" id="searchInput" placeholder="英単語 / 日本語で検索">
-      </div>
-
+      <div class="toolbar"><input class="input grow" id="searchInput" placeholder="英単語 / 日本語で検索"></div>
       <div class="stats" id="stats"></div>
-
-      <div class="table-wrap" style="margin-top:10px">
-        <table class="word-table">
+      <div class="tableWrap">
+        <table>
           <thead><tr><th>英単語</th><th>日本語</th><th>例文</th><th>重要度</th><th></th></tr></thead>
           <tbody id="wordBody"></tbody>
         </table>
@@ -197,412 +190,316 @@
   </div>
 </div>
 
-<dialog id="deckDialog"><div class="modal">
-  <h2>単語帳ファイルを作成</h2>
-  <input class="input" id="newDeckName" placeholder="例：英検準1級 Week 1">
-  <div class="help" style="margin-top:8px">ファイルを作ると、その中に「通常」「★1」「★★」の3つの表示が自動で用意されます。</div>
-  <div class="row" style="justify-content:flex-end;margin-top:12px">
-    <button class="btn" data-close="deckDialog">キャンセル</button><button class="btn primary" id="createDeckBtn">作成</button>
-  </div>
-</div></dialog>
-
-<dialog id="renameDialog"><div class="modal">
-  <h2>ファイル名を変更</h2>
-  <input class="input" id="renameDeckName">
-  <div class="row" style="justify-content:flex-end;margin-top:12px">
-    <button class="btn" data-close="renameDialog">キャンセル</button><button class="btn primary" id="doRenameDeckBtn">変更</button>
+<dialog id="nameDialog"><div class="modal">
+  <h2 id="nameDialogTitle"></h2>
+  <input class="input" id="nameInput">
+  <div class="row" style="justify-content:flex-end;margin-top:10px">
+    <button class="btn" data-close="nameDialog">キャンセル</button>
+    <button class="btn primary" id="nameSaveBtn">保存</button>
   </div>
 </div></dialog>
 
 <dialog id="importDialog"><div class="modal">
   <h2>一括インポート</h2>
-  <div class="help">1行1語。<b>英単語[TAB]日本語[TAB]例文（任意）</b><br>カンマ区切りにも対応します。</div>
-  <textarea id="importText" rows="12" placeholder="reluctant&#9;気が進まない&#9;He was reluctant to accept the offer.&#10;inevitable&#9;避けられない&#9;The result seemed inevitable."></textarea>
-  <div class="row" style="justify-content:flex-end;margin-top:12px">
-    <button class="btn" data-close="importDialog">キャンセル</button><button class="btn primary" id="doImportBtn">インポート</button>
+  <div class="help" style="display:block">1行1語：<b>英単語[TAB]日本語[TAB]例文（任意）</b><br>カンマ区切りにも対応します。</div>
+  <textarea id="importText" rows="12" placeholder="reluctant&#9;気が進まない&#9;He was reluctant to accept the offer."></textarea>
+  <div class="row" style="justify-content:flex-end;margin-top:10px">
+    <button class="btn" data-close="importDialog">キャンセル</button>
+    <button class="btn primary" id="doImportBtn">インポート</button>
   </div>
 </div></dialog>
 
 <dialog id="flashDialog"><div class="modal">
   <div class="row"><h2 style="margin:0" class="grow">フラッシュカード</h2><button class="btn" data-close="flashDialog">終了</button></div>
-  <div class="scope-tabs" id="flashScopeTabs">
-    <button class="scope-tab active" data-scope="all">通常</button>
-    <button class="scope-tab" data-scope="star1">★1</button>
-    <button class="scope-tab" data-scope="star2">★★</button>
+  <div class="autoSpeakRow">
+    <div class="muted" id="flashScopeName"></div>
+    <label class="switchRow"><input type="checkbox" id="autoSpeak">自動発音</label>
   </div>
-  <div class="row" style="justify-content:space-between">
-    <div class="muted" id="flashFileName"></div>
-    <button class="btn small" id="shuffleFlashBtn">シャッフル</button>
-  </div>
-  <div class="empty" id="flashEmpty">対象の単語がありません。</div>
-  <div class="flash-wrap hidden" id="flashWrap">
-    <div class="flash-card" id="flashCard" aria-label="タップして裏返す">
-      <div class="flash-inner">
-        <div class="flash-face flash-front">
-          <div class="flash-word" id="flashWord"></div>
-          <div class="flash-hint">タップして意味を見る</div>
+  <div class="empty hidden" id="flashEmpty">対象の単語がありません。</div>
+  <div id="flashArea">
+    <div class="flashCard" id="flashCard">
+      <div class="flashInner">
+        <div class="flashFace">
+          <button class="audioBtn flashAudio" id="flashAudioBtn" type="button">🔊</button>
+          <div class="flashWord" id="flashWord"></div>
+          <div class="flashHint">タップして意味を見る</div>
         </div>
-        <div class="flash-face flash-back">
-          <div class="flash-jp" id="flashJp"></div>
-          <div class="flash-example" id="flashExample"></div>
-          <div class="flash-hint">タップして英単語に戻る</div>
+        <div class="flashFace flashBack">
+          <div class="flashJp" id="flashJp"></div>
+          <div class="flashEx" id="flashEx"></div>
+          <div class="flashHint">タップして英単語に戻る</div>
         </div>
       </div>
     </div>
-    <div class="flash-starbar">
-      <button id="flashStar1" aria-label="星1">★</button>
-      <button id="flashStar2" aria-label="星2">★</button>
-    </div>
-    <div class="flash-controls">
+    <div class="flashStarbar"><button id="flashStar1">★</button><button id="flashStar2">★</button></div>
+    <div class="flashControls">
       <button class="btn" id="prevFlashBtn">← 前</button>
-      <div class="flash-progress" id="flashProgress"></div>
+      <div class="flashProgress" id="flashProgress"></div>
       <button class="btn primary" id="nextFlashBtn">次 →</button>
     </div>
+    <div class="row" style="justify-content:center;margin-top:8px"><button class="btn small" id="shuffleFlashBtn">シャッフル</button></div>
   </div>
 </div></dialog>
 
 <dialog id="testDialog"><div class="modal">
   <div class="row"><h2 style="margin:0" class="grow">英文4択テスト</h2><button class="btn" data-close="testDialog">終了</button></div>
-  <div class="row" style="margin-top:10px">
-    <select id="testScope" style="width:auto">
-      <option value="all">現在のファイル・通常</option>
-      <option value="star1">現在のファイル・★1</option>
-      <option value="star2">現在のファイル・★★</option>
-    </select>
-    <button class="btn primary" id="startTestBtn">テスト開始</button>
-  </div>
-  <div class="testbox hidden" id="testBox">
-    <div class="muted" id="testProgress"></div>
+  <div class="row" style="margin-top:10px"><button class="btn primary" id="startTestBtn">テスト開始</button></div>
+  <div class="empty" id="testEmpty">現在表示中の単語から出題します。</div>
+  <div class="hidden" id="testBox">
+    <div class="muted" id="testProgress" style="text-align:center;margin-top:10px"></div>
     <div class="sentence" id="sentence"></div>
     <div class="choices" id="choices"></div>
-    <div id="feedback" style="margin-top:14px;font-weight:700"></div>
-    <button class="btn primary hidden" id="nextQBtn" style="margin-top:14px">次の問題</button>
+    <div id="feedback" style="margin-top:12px;font-weight:700;text-align:center"></div>
+    <div class="row" style="justify-content:center"><button class="btn primary hidden" id="nextQBtn" style="margin-top:12px">次の問題</button></div>
   </div>
-  <div class="empty" id="testEmpty">対象を選んで「テスト開始」を押してください。</div>
 </div></dialog>
 
 <dialog id="restoreDialog"><div class="modal">
   <h2>バックアップから復元</h2>
   <textarea id="restoreText" rows="10" placeholder="バックアップJSONを貼り付け"></textarea>
-  <div class="row" style="justify-content:flex-end;margin-top:12px">
-    <button class="btn" data-close="restoreDialog">キャンセル</button><button class="btn primary" id="doRestoreBtn">復元</button>
+  <div class="row" style="justify-content:flex-end;margin-top:10px">
+    <button class="btn" data-close="restoreDialog">キャンセル</button>
+    <button class="btn primary" id="doRestoreBtn">復元</button>
   </div>
 </div></dialog>
 
 <script>
-const KEY='vocabstar_v1';
+const KEY='vocabstar_v3';
+const LEGACY_KEY='vocabstar_v1';
+
 let state=loadState();
-let activeDeckId=state.decks[0]?.id||null;
-let viewMode='all'; // all | star1 | star2
+let activeFileId=state.files[0].id;
+let activeListId=state.files[0].lists[0].id;
+let viewMode='list'; // list | star1 | star2
+let nameAction=null;
+let flashState={items:[],index:0};
 let testState=null;
-let flashState={scope:'all',items:[],index:0};
 
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function makeList(name,words=[]){return {id:uid(),name,words:words.map(w=>({...w,id:w.id||uid(),star:Number(w.star)||0}))}}
+function makeFile(name,lists=[]){return {id:uid(),name,lists:lists.length?lists:[makeList('My Words')]}}
 function loadState(){
   try{
     const x=JSON.parse(localStorage.getItem(KEY));
-    if(x&&Array.isArray(x.decks)&&x.decks.length)return x
+    if(x&&Array.isArray(x.files)&&x.files.length)return x
   }catch(e){}
-  return {decks:[{id:uid(),name:'My Words',words:[]}]}
+  try{
+    const old=JSON.parse(localStorage.getItem(LEGACY_KEY));
+    if(old&&Array.isArray(old.decks)&&old.decks.length){
+      const migrated={files:[makeFile('My File',old.decks.map(d=>makeList(d.name||'単語帳',d.words||[])))]};
+      localStorage.setItem(KEY,JSON.stringify(migrated));
+      return migrated
+    }
+  }catch(e){}
+  return {files:[makeFile('My File')]}
 }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function currentDeck(){return state.decks.find(d=>d.id===activeDeckId)}
-function wordsFor(deck,mode='all'){
-  if(!deck)return [];
-  if(mode==='star1')return deck.words.filter(w=>w.star===1);
-  if(mode==='star2')return deck.words.filter(w=>w.star===2);
-  return deck.words;
+function currentFile(){return state.files.find(f=>f.id===activeFileId)}
+function currentList(){return currentFile()?.lists.find(l=>l.id===activeListId)}
+function fileWords(file=currentFile()){return file?file.lists.flatMap(l=>l.words.map(w=>({...w,listId:l.id,listName:l.name}))):[]}
+function wordsForView(){
+  if(viewMode==='star1')return fileWords().filter(w=>w.star===1);
+  if(viewMode==='star2')return fileWords().filter(w=>w.star===2);
+  return (currentList()?.words||[]).map(w=>({...w,listId:activeListId,listName:currentList()?.name||''}))
 }
-function currentVisibleWords(){
-  let words=[...wordsFor(currentDeck(),viewMode)];
-  const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  if(q)words=words.filter(w=>(w.en+' '+w.jp+' '+(w.example||'')).toLowerCase().includes(q));
-  return words;
+function filteredWords(){
+  let a=wordsForView();
+  const q=searchInput.value.trim().toLowerCase();
+  if(q)a=a.filter(w=>(w.en+' '+w.jp+' '+(w.example||'')).toLowerCase().includes(q));
+  return a
 }
-function modeLabel(mode){
-  if(mode==='star1')return '★1';
-  if(mode==='star2')return '★★';
-  return '通常';
-}
-function openDeck(id,mode='all'){
-  activeDeckId=id;viewMode=mode;
-  document.getElementById('searchInput').value='';
-  render();
+function findStoredWord(id,listId){
+  return currentFile()?.lists.find(l=>l.id===listId)?.words.find(w=>w.id===id)
 }
 function render(){
-  const list=document.getElementById('deckList');list.innerHTML='';
-  state.decks.forEach(d=>{
-    const item=document.createElement('div');
-    item.className='file-item '+(d.id===activeDeckId?'active':'');
-    const c1=d.words.filter(w=>w.star===1).length;
-    const c2=d.words.filter(w=>w.star===2).length;
-    item.innerHTML=`
-      <div class="file-main">
-        <button class="file-open">
-          <div class="file-name">${esc(d.name)}</div>
-          <div class="muted">${d.words.length}語</div>
-        </button>
-        <div class="file-actions">
-          <button class="icon-btn rename" title="名前変更">✎</button>
-          <button class="icon-btn delete" title="削除">×</button>
-        </div>
-      </div>
-      <div class="star-views">
-        <button class="star-view s1 ${d.id===activeDeckId&&viewMode==='star1'?'active':''}"><b>★1</b> ${c1}語</button>
-        <button class="star-view s2 ${d.id===activeDeckId&&viewMode==='star2'?'active':''}"><b>★★</b> ${c2}語</button>
-      </div>`;
-    item.querySelector('.file-open').onclick=()=>openDeck(d.id,'all');
-    item.querySelector('.s1').onclick=()=>openDeck(d.id,'star1');
-    item.querySelector('.s2').onclick=()=>openDeck(d.id,'star2');
-    item.querySelector('.rename').onclick=()=>openRename(d.id);
-    item.querySelector('.delete').onclick=()=>deleteDeck(d.id);
-    list.appendChild(item);
+  fileSelect.innerHTML='';
+  state.files.forEach(f=>{
+    const o=document.createElement('option');o.value=f.id;o.textContent=f.name;if(f.id===activeFileId)o.selected=true;fileSelect.appendChild(o)
   });
+  const f=currentFile();
+  listScroller.innerHTML='';
+  f.lists.forEach(l=>{
+    const b=document.createElement('button');b.className='listBtn '+(viewMode==='list'&&l.id===activeListId?'active':'');
+    b.innerHTML=`<div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div>`;
+    b.onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
+    b.oncontextmenu=e=>{e.preventDefault();openListMenu(l.id)};
+    listScroller.appendChild(b)
+  });
+  const fw=fileWords(f);
+  const c1=fw.filter(w=>w.star===1).length,c2=fw.filter(w=>w.star===2).length;
+  star1Count.textContent=`${c1}語`;star2Count.textContent=`${c2}語`;
+  fileStar1Btn.classList.toggle('active',viewMode==='star1');
+  fileStar2Btn.classList.toggle('active',viewMode==='star2');
 
-  const deck=currentDeck();
-  const words=currentVisibleWords();
-  const raw=deck?.words||[];
-  document.getElementById('deckTitle').textContent=deck?.name||'単語帳';
-  const badge=document.getElementById('modeBadge');
-  if(viewMode==='all'){badge.classList.add('hidden')}else{badge.textContent=modeLabel(viewMode);badge.classList.remove('hidden')}
-  document.getElementById('deckMeta').textContent=`${modeLabel(viewMode)}：${wordsFor(deck,viewMode).length}語`;
-  document.getElementById('stats').innerHTML=`
-    <span class="pill">全 ${raw.length}</span>
-    <span class="pill">★1 ${raw.filter(w=>w.star===1).length}</span>
-    <span class="pill">★★ ${raw.filter(w=>w.star===2).length}</span>`;
+  let title='',meta='';
+  if(viewMode==='list'){title=currentList()?.name||'単語帳';meta=`${f.name} / ${currentList()?.words.length||0}語`;modeBadge.classList.add('hidden')}
+  else{title=f.name;meta=`ファイル内の全単語帳から自動統合`;modeBadge.textContent=viewMode==='star1'?'★1 統合':'★★ 統合';modeBadge.classList.remove('hidden')}
+  deckTitle.textContent=title;deckMeta.textContent=meta;
 
-  const body=document.getElementById('wordBody');body.innerHTML='';
+  const raw=wordsForView();
+  stats.innerHTML=`<span class="pill">表示 ${raw.length}</span><span class="pill">ファイル全体 ${fw.length}</span><span class="pill">★1 ${c1}</span><span class="pill">★★ ${c2}</span>`;
+  importBtn.disabled=viewMode!=='list';
+
+  const words=filteredWords();wordBody.innerHTML='';
   words.forEach(w=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><div class="word">${esc(w.en)}</div></td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
+    tr.innerHTML=`<td><div class="wordHead"><button class="audioBtn" type="button">🔊</button><div><div class="word">${esc(w.en)}</div>${viewMode!=='list'?`<div class="listMeta">${esc(w.listName)}</div>`:''}</div></div></td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
+    tr.children[0].querySelector('.audioBtn').onclick=e=>{e.stopPropagation();speak(w.en)};
     const stars=tr.children[3];
     [1,2].forEach(n=>{
-      const sb=document.createElement('button');
-      sb.textContent='★';
-      sb.className=w.star>=n?'star-on':'star-off';
-      sb.title=`★${n}`;
-      sb.onclick=()=>setStar(w.id,n);
-      stars.appendChild(sb)
+      const sb=document.createElement('button');sb.textContent='★';sb.className=w.star>=n?'star-on':'star-off';
+      sb.onclick=()=>setStar(w.id,w.listId,n);stars.appendChild(sb)
     });
-    tr.children[4].querySelector('button').onclick=()=>deleteWord(w.id);
-    body.appendChild(tr)
+    tr.children[4].querySelector('button').onclick=()=>deleteWord(w.id,w.listId);
+    wordBody.appendChild(tr)
   });
-  document.getElementById('emptyState').classList.toggle('hidden',words.length>0);
+  emptyState.classList.toggle('hidden',words.length>0)
 }
-function setStar(id,n){
-  const d=currentDeck();
-  const w=d?.words.find(x=>x.id===id);
-  if(!w)return;
-  w.star=(w.star===n?0:n);
-  save();
-  if(document.getElementById('flashDialog').open)refreshFlashAfterStar(id);
+function setStar(id,listId,n){
+  const w=findStoredWord(id,listId);if(!w)return;
+  w.star=(w.star===n?0:n);save();
+  if(flashDialog.open)refreshFlash(id,listId)
 }
-function deleteWord(id){
-  const d=currentDeck();if(!d)return;
-  const i=d.words.findIndex(x=>x.id===id);
-  if(i>=0)d.words.splice(i,1);
-  save()
-}
-function openRename(id){
-  const d=state.decks.find(x=>x.id===id);if(!d)return;
-  renameDialog.dataset.id=id;
-  renameDeckName.value=d.name;
-  renameDialog.showModal()
-}
-function deleteDeck(id){
-  const d=state.decks.find(x=>x.id===id);if(!d)return;
-  if(state.decks.length===1){alert('単語帳ファイルは最低1つ必要です。');return}
-  if(!confirm(`「${d.name}」を削除しますか？ 中の単語も削除されます。`))return;
-  state.decks=state.decks.filter(x=>x.id!==id);
-  if(activeDeckId===id)activeDeckId=state.decks[0].id;
-  viewMode='all';save()
+function deleteWord(id,listId){
+  const l=currentFile()?.lists.find(x=>x.id===listId);if(!l)return;
+  const i=l.words.findIndex(w=>w.id===id);if(i>=0)l.words.splice(i,1);save()
 }
 function parseImport(text){
-  return text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{
-    let p=line.split('\t');
-    if(p.length<2)p=line.split(',');
+  return text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(line=>{
+    let p=line.split('\t');if(p.length<2)p=line.split(',');
     return {en:(p[0]||'').trim(),jp:(p[1]||'').trim(),example:p.slice(2).join(',').trim()}
   }).filter(x=>x.en&&x.jp)
 }
+function speak(text){
+  if(!('speechSynthesis' in window)){alert('この端末では音声読み上げを利用できません。');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';u.rate=.88;u.pitch=1;
+  const voices=speechSynthesis.getVoices();
+  const preferred=voices.find(v=>/^en-(US|GB)/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang));
+  if(preferred)u.voice=preferred;
+  speechSynthesis.speak(u)
+}
+function openName(title,value,action){nameDialogTitle.textContent=title;nameInput.value=value||'';nameAction=action;nameDialog.showModal();setTimeout(()=>nameInput.focus(),50)}
+function ensureActive(){
+  const f=currentFile()||state.files[0];activeFileId=f.id;
+  if(!f.lists.some(l=>l.id===activeListId))activeListId=f.lists[0].id
+}
 function inferType(w){
-  const jp=w.jp||'';const en=w.en.toLowerCase();
-  if(/ly$/.test(en))return 'adv';
-  if(/する|させる|になる|める|む|ぶ|く$/.test(jp))return 'verb';
-  if(/な$|い$|的$/.test(jp)||/(ous|ful|less|able|ible|ive|al|ic|ent|ant)$/.test(en))return 'adj';
-  return 'noun'
+  const jp=w.jp||'',en=w.en.toLowerCase();
+  if(/ly$/.test(en))return'adv';
+  if(/する|させる|になる|める|む|ぶ|く$/.test(jp))return'verb';
+  if(/な$|い$|的$/.test(jp)||/(ous|ful|less|able|ible|ive|al|ic|ent|ant)$/.test(en))return'adj';
+  return'noun'
 }
 function makeSentence(w){
   if(w.example){
-    const escaped=w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-    const re=new RegExp(`\\b${escaped}\\b`,'i');
+    const escaped=w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),re=new RegExp(`\\b${escaped}\\b`,'i');
     if(re.test(w.example))return w.example.replace(re,'____')
   }
-  const t=inferType(w);
-  const pools={
-    verb:['They decided to ____ the plan before the deadline.','We need to ____ the issue carefully.','She tried to ____ the task on her own.'],
-    adj:['The situation was surprisingly ____ for everyone involved.','His explanation was quite ____ in the end.','The result seemed ____ at first.'],
-    adv:['She responded ____ to the question.','The team worked ____ throughout the project.','He spoke ____ during the meeting.'],
-    noun:['The manager mentioned the ____ during the meeting.','This ____ became important later in the discussion.','They discussed the ____ in class yesterday.']
-  };
-  const a=pools[t];return a[Math.floor(Math.random()*a.length)]
+  const p={
+    verb:['They decided to ____ the plan before the deadline.','We need to ____ the issue carefully.'],
+    adj:['The situation was surprisingly ____ for everyone involved.','The result seemed ____ at first.'],
+    adv:['She responded ____ to the question.','The team worked ____ throughout the project.'],
+    noun:['The manager mentioned the ____ during the meeting.','They discussed the ____ in class yesterday.']
+  }[inferType(w)];
+  return p[Math.floor(Math.random()*p.length)]
 }
-function shuffle(a){
-  const x=[...a];
-  for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}
-  return x
-}
+function shuffle(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
 
-/* Flashcards */
-function openFlash(){
-  flashState.scope=viewMode;
-  document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(b=>b.classList.toggle('active',b.dataset.scope===flashState.scope));
-  flashDialog.showModal();
-  buildFlash(false)
-}
-function buildFlash(doShuffle=false){
-  const d=currentDeck();
-  let items=[...wordsFor(d,flashState.scope)];
-  if(doShuffle)items=shuffle(items);
-  flashState.items=items;flashState.index=0;
-  flashFileName.textContent=`${d?.name||''} / ${modeLabel(flashState.scope)}`;
-  flashEmpty.classList.toggle('hidden',items.length>0);
-  flashWrap.classList.toggle('hidden',items.length===0);
-  if(items.length)showFlash()
-}
-function showFlash(){
-  const w=flashState.items[flashState.index];if(!w)return;
-  flashCard.classList.remove('flipped');
-  flashWord.textContent=w.en;
-  flashJp.textContent=w.jp;
-  flashExample.textContent=w.example||'';
-  flashProgress.textContent=`${flashState.index+1} / ${flashState.items.length}`;
-  flashStar1.className=w.star>=1?'star-on':'star-off';
-  flashStar2.className=w.star>=2?'star-on':'star-off'
-}
-function refreshFlashAfterStar(id){
-  if(!flashState.items.length)return;
-  const current=flashState.items[flashState.index];
-  const fresh=currentDeck()?.words.find(w=>w.id===id);
-  if(fresh&&current?.id===id){
-    current.star=fresh.star;
-    flashStar1.className=fresh.star>=1?'star-on':'star-off';
-    flashStar2.className=fresh.star>=2?'star-on':'star-off'
-  }
-  if(flashState.scope!=='all'){
-    flashState.items=wordsFor(currentDeck(),flashState.scope);
-    if(!flashState.items.length){
-      flashEmpty.classList.remove('hidden');flashWrap.classList.add('hidden');return
-    }
-    flashState.index=Math.min(flashState.index,flashState.items.length-1);
-    showFlash()
+/* file/list actions */
+fileSelect.onchange=()=>{activeFileId=fileSelect.value;activeListId=currentFile().lists[0].id;viewMode='list';searchInput.value='';render()};
+addFileBtn.onclick=()=>openName('ファイルを作成','',name=>{const f=makeFile(name);state.files.push(f);activeFileId=f.id;activeListId=f.lists[0].id;viewMode='list';save()});
+renameFileBtn.onclick=()=>openName('ファイル名を変更',currentFile().name,name=>{currentFile().name=name;save()});
+deleteFileBtn.onclick=()=>{
+  if(state.files.length===1){alert('ファイルは最低1つ必要です。');return}
+  if(!confirm(`「${currentFile().name}」を削除しますか？ 中の単語帳も削除されます。`))return;
+  state.files=state.files.filter(f=>f.id!==activeFileId);activeFileId=state.files[0].id;activeListId=state.files[0].lists[0].id;viewMode='list';save()
+};
+addListBtn.onclick=()=>openName('単語帳リストを作成','',name=>{const l=makeList(name);currentFile().lists.push(l);activeListId=l.id;viewMode='list';save()});
+function openListMenu(id){
+  const l=currentFile().lists.find(x=>x.id===id);
+  const choice=prompt(`単語帳「${l.name}」\n1 = 名前変更\n2 = 削除\n\n数字を入力`);
+  if(choice==='1')openName('単語帳名を変更',l.name,name=>{l.name=name;save()});
+  if(choice==='2'){
+    if(currentFile().lists.length===1){alert('単語帳は最低1つ必要です。');return}
+    if(confirm(`「${l.name}」を削除しますか？`)){currentFile().lists=currentFile().lists.filter(x=>x.id!==id);ensureActive();viewMode='list';save()}
   }
 }
+nameSaveBtn.onclick=()=>{const n=nameInput.value.trim();if(!n||!nameAction)return;nameAction(n);nameDialog.close();nameAction=null};
+fileStar1Btn.onclick=()=>{viewMode='star1';searchInput.value='';render()};
+fileStar2Btn.onclick=()=>{viewMode='star2';searchInput.value='';render()};
 
-/* Test */
-function testPool(scope){return wordsFor(currentDeck(),scope)}
-function showQuestion(){
-  const q=testState.questions[testState.index];
-  testProgress.textContent=`${testState.index+1} / ${testState.questions.length}`;
-  sentence.textContent=q.sentence;feedback.textContent='';nextQBtn.classList.add('hidden');
-  choices.innerHTML='';
-  q.choices.forEach((w,i)=>{
-    const b=document.createElement('button');b.className='choice';
-    b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;
-    b.onclick=()=>answerChoice(b,w,q);choices.appendChild(b)
-  })
-}
-function answerChoice(btn,w,q){
-  if(testState.answered)return;testState.answered=true;
-  [...document.querySelectorAll('.choice')].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});
-  if(w.id===q.answer.id){testState.score++;feedback.textContent='正解！'}
-  else{btn.classList.add('wrong');feedback.textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}
-  nextQBtn.classList.remove('hidden')
-}
-
-/* UI */
-addDeckBtn.onclick=()=>{newDeckName.value='';deckDialog.showModal()};
-createDeckBtn.onclick=()=>{
-  const name=newDeckName.value.trim();if(!name)return;
-  const d={id:uid(),name,words:[]};state.decks.push(d);activeDeckId=d.id;viewMode='all';
-  deckDialog.close();save()
-};
-doRenameDeckBtn.onclick=()=>{
-  const d=state.decks.find(x=>x.id===renameDialog.dataset.id);
-  const name=renameDeckName.value.trim();
-  if(!d||!name)return;
-  d.name=name;renameDialog.close();save()
-};
-importBtn.onclick=()=>{
-  if(viewMode!=='all'){alert('インポートはファイルの「通常」を開いてから行ってください。');return}
-  importText.value='';importDialog.showModal()
-};
+/* import */
+importBtn.onclick=()=>{if(viewMode!=='list')return;importText.value='';importDialog.showModal()};
 doImportBtn.onclick=()=>{
-  const d=currentDeck();if(!d)return;
-  const rows=parseImport(importText.value);
-  const existing=new Set(d.words.map(w=>w.en.toLowerCase()));
-  let added=0;
-  rows.forEach(r=>{
-    if(!existing.has(r.en.toLowerCase())){
-      d.words.push({id:uid(),...r,star:0});existing.add(r.en.toLowerCase());added++
-    }
-  });
+  const l=currentList(),rows=parseImport(importText.value),seen=new Set(l.words.map(w=>w.en.toLowerCase()));let added=0;
+  rows.forEach(r=>{if(!seen.has(r.en.toLowerCase())){l.words.push({id:uid(),...r,star:0});seen.add(r.en.toLowerCase());added++}});
   importDialog.close();save();alert(`${added}語を追加しました。`)
 };
 searchInput.oninput=render;
 
-flashBtn.onclick=openFlash;
+/* flashcards */
+flashBtn.onclick=()=>{
+  flashState.items=shuffle(wordsForView());flashState.index=0;
+  flashScopeName.textContent=`${currentFile().name} / ${viewMode==='list'?currentList().name:(viewMode==='star1'?'★1 統合':'★★ 統合')}`;
+  flashDialog.showModal();showFlash()
+};
+function showFlash(){
+  const ok=flashState.items.length>0;
+  flashEmpty.classList.toggle('hidden',ok);flashArea.classList.toggle('hidden',!ok);if(!ok)return;
+  const w=flashState.items[flashState.index];flashCard.classList.remove('flipped');
+  flashWord.textContent=w.en;flashJp.textContent=w.jp;flashEx.textContent=w.example||'';
+  flashProgress.textContent=`${flashState.index+1} / ${flashState.items.length}`;
+  flashStar1.className=w.star>=1?'star-on':'star-off';flashStar2.className=w.star>=2?'star-on':'star-off';
+  if(autoSpeak.checked)setTimeout(()=>speak(w.en),100)
+}
 flashCard.onclick=()=>flashCard.classList.toggle('flipped');
-document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(b=>b.onclick=()=>{
-  flashState.scope=b.dataset.scope;
-  document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(x=>x.classList.toggle('active',x===b));
-  buildFlash(false)
-});
-shuffleFlashBtn.onclick=()=>buildFlash(true);
+flashAudioBtn.onclick=e=>{e.stopPropagation();const w=flashState.items[flashState.index];if(w)speak(w.en)};
 prevFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index-1+flashState.items.length)%flashState.items.length;showFlash()};
 nextFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index+1)%flashState.items.length;showFlash()};
-flashStar1.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,1)};
-flashStar2.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,2)};
+shuffleFlashBtn.onclick=()=>{flashState.items=shuffle(flashState.items);flashState.index=0;showFlash()};
+flashStar1.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,w.listId,1)};
+flashStar2.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,w.listId,2)};
+function refreshFlash(id,listId){
+  if(!flashState.items.length)return;
+  const cur=flashState.items[flashState.index],fresh=findStoredWord(id,listId);
+  if(cur&&fresh&&cur.id===id&&cur.listId===listId){cur.star=fresh.star;flashStar1.className=fresh.star>=1?'star-on':'star-off';flashStar2.className=fresh.star>=2?'star-on':'star-off'}
+}
 
-testBtn.onclick=()=>{
-  testScope.value=viewMode;
-  testDialog.showModal()
-};
+/* test */
+testBtn.onclick=()=>{testDialog.showModal();testEmpty.classList.remove('hidden');testBox.classList.add('hidden')};
 startTestBtn.onclick=()=>{
-  const pool=testPool(testScope.value);
+  const pool=wordsForView();
   if(pool.length<4){alert('4択テストには対象単語が4語以上必要です。');return}
-  const count=Math.min(20,pool.length);
-  const qs=shuffle(pool).slice(0,count).map(ans=>{
-    const distract=shuffle(pool.filter(w=>w.id!==ans.id)).slice(0,3);
-    return {answer:ans,choices:shuffle([ans,...distract]),sentence:makeSentence(ans)}
-  });
-  testState={questions:qs,index:0,score:0,answered:false};
-  testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQuestion()
+  const qs=shuffle(pool).slice(0,Math.min(20,pool.length)).map(ans=>({answer:ans,choices:shuffle([ans,...shuffle(pool.filter(w=>w.id!==ans.id)).slice(0,3)]),sentence:makeSentence(ans)}));
+  testState={questions:qs,index:0,score:0,answered:false};testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQ()
 };
+function showQ(){
+  const q=testState.questions[testState.index];testProgress.textContent=`${testState.index+1} / ${testState.questions.length}`;
+  sentence.textContent=q.sentence;feedback.textContent='';nextQBtn.classList.add('hidden');choices.innerHTML='';
+  q.choices.forEach((w,i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;b.onclick=()=>answerQ(b,w,q);choices.appendChild(b)})
+}
+function answerQ(btn,w,q){
+  if(testState.answered)return;testState.answered=true;
+  [...choices.children].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});
+  if(w.id===q.answer.id){testState.score++;feedback.textContent='正解！'}else{btn.classList.add('wrong');feedback.textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}
+  nextQBtn.classList.remove('hidden')
+}
 nextQBtn.onclick=()=>{
   testState.index++;testState.answered=false;
-  if(testState.index>=testState.questions.length){
-    sentence.textContent=`終了：${testState.score} / ${testState.questions.length} 正解`;
-    choices.innerHTML='';feedback.textContent='';nextQBtn.classList.add('hidden');testProgress.textContent='';return
-  }
-  showQuestion()
+  if(testState.index>=testState.questions.length){sentence.textContent=`終了：${testState.score} / ${testState.questions.length} 正解`;choices.innerHTML='';feedback.textContent='';nextQBtn.classList.add('hidden');testProgress.textContent='';return}
+  showQ()
 };
 
-exportBtn.onclick=()=>{
-  const txt=JSON.stringify(state);
-  navigator.clipboard?.writeText(txt).then(()=>alert('バックアップJSONをコピーしました。')).catch(()=>prompt('このJSONをコピーしてください',txt))
-};
+/* backup */
+exportBtn.onclick=()=>{const txt=JSON.stringify(state);navigator.clipboard?.writeText(txt).then(()=>alert('バックアップJSONをコピーしました。')).catch(()=>prompt('コピーしてください',txt))};
 restoreBtn.onclick=()=>{restoreText.value='';restoreDialog.showModal()};
-doRestoreBtn.onclick=()=>{
-  try{
-    const x=JSON.parse(restoreText.value);
-    if(!x||!Array.isArray(x.decks)||!x.decks.length)throw 0;
-    state=x;activeDeckId=state.decks[0].id;viewMode='all';
-    localStorage.setItem(KEY,JSON.stringify(state));restoreDialog.close();render();alert('復元しました。')
-  }catch(e){alert('バックアップ形式が正しくありません。')}
-};
+doRestoreBtn.onclick=()=>{try{const x=JSON.parse(restoreText.value);if(!x||!Array.isArray(x.files)||!x.files.length)throw 0;state=x;activeFileId=state.files[0].id;activeListId=state.files[0].lists[0].id;viewMode='list';localStorage.setItem(KEY,JSON.stringify(state));restoreDialog.close();render();alert('復元しました。')}catch(e){alert('バックアップ形式が正しくありません。')}};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
-if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+if('speechSynthesis' in window){speechSynthesis.getVoices()}
+if('serviceWorker' in navigator&&location.protocol!=='file:'){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 render();
 </script>
 </body>

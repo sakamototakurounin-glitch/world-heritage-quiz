@@ -8,11 +8,118 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <style>
     :root{--bg:#f6f7fb;--card:#fff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;--accent:#2563eb;--danger:#dc2626;--star:#f59e0b}
-    *{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-    button,input,textarea,select{font:inherit}.app{max-width:1100px;margin:auto;padding:16px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.brand{font-size:24px;font-weight:800}.muted{color:var(--sub);font-size:13px}.grid{display:grid;grid-template-columns:260px 1fr;gap:14px;margin-top:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
-    .deck-list{display:flex;flex-direction:column;gap:8px}.deck{padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left;cursor:pointer}.deck.active{border-color:var(--accent);background:#eff6ff}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}.btn{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;cursor:pointer}.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}.btn.danger{color:var(--danger)}.btn.small{padding:5px 8px;font-size:12px}.input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:white}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.stats{display:flex;gap:12px;flex-wrap:wrap}.pill{background:#f3f4f6;border-radius:999px;padding:6px 10px;font-size:12px}.table-wrap{overflow:auto}.word-table{width:100%;border-collapse:collapse;min-width:700px}.word-table th,.word-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}.word{font-weight:700}.jp{color:#374151}.example{font-size:12px;color:var(--sub);max-width:360px}.stars button{border:none;background:transparent;font-size:20px;cursor:pointer;padding:1px}.star-on{color:var(--star)}.star-off{color:#d1d5db}
-    dialog{border:none;border-radius:16px;padding:0;max-width:700px;width:calc(100% - 24px)}dialog::backdrop{background:rgba(0,0,0,.35)}.modal{padding:16px}.modal h2{margin-top:0}.help{font-size:12px;color:var(--sub);line-height:1.6}.testbox{padding:24px;text-align:center}.sentence{font-size:24px;line-height:1.5;margin:20px 0}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{padding:14px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;text-align:left}.choice.correct{border-color:#16a34a;background:#f0fdf4}.choice.wrong{border-color:#dc2626;background:#fef2f2}.hidden{display:none!important}.empty{padding:28px;text-align:center;color:var(--sub)}.section-title{font-weight:700;margin:0 0 8px}.sticky-actions{display:flex;gap:8px;flex-wrap:wrap}
-    @media(max-width:800px){.grid{grid-template-columns:1fr}.choices{grid-template-columns:1fr}.sentence{font-size:20px}.app{padding:10px}.top .muted{width:100%}}
+    *{box-sizing:border-box}
+    html,body{max-width:100%;overflow-x:hidden}
+    body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
+    button,input,textarea,select{font:inherit;max-width:100%}
+    button{touch-action:manipulation}
+    .app{width:100%;max-width:1100px;margin:auto;padding:16px}
+    .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .brand{font-size:24px;font-weight:800}
+    .muted{color:var(--sub);font-size:13px}
+    .grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;margin-top:14px}
+    .card{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
+    .deck-list{display:flex;flex-direction:column;gap:8px}
+    .deck{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left;cursor:pointer}
+    .deck.active{border-color:var(--accent);background:#eff6ff}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
+    .grow{flex:1;min-width:0}
+    .btn{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+    .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
+    .btn.danger{color:var(--danger)}
+    .btn.small{padding:5px 8px;font-size:12px}
+    .input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:white}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;min-width:0}
+    .stats{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{background:#f3f4f6;border-radius:999px;padding:6px 10px;font-size:12px}
+    .table-wrap{width:100%;overflow:auto}
+    .word-table{width:100%;border-collapse:collapse;min-width:700px}
+    .word-table th,.word-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+    .word{font-weight:800;overflow-wrap:anywhere}
+    .jp{color:#374151;overflow-wrap:anywhere}
+    .example{font-size:12px;color:var(--sub);max-width:360px;overflow-wrap:anywhere}
+    .stars button{border:none;background:transparent;font-size:20px;cursor:pointer;padding:1px}
+    .star-on{color:var(--star)}.star-off{color:#d1d5db}
+    dialog{border:none;border-radius:16px;padding:0;max-width:700px;width:calc(100% - 24px)}
+    dialog::backdrop{background:rgba(0,0,0,.35)}
+    .modal{padding:16px;max-height:88dvh;overflow:auto}
+    .modal h2{margin-top:0}
+    .help{font-size:12px;color:var(--sub);line-height:1.6}
+    .testbox{padding:24px;text-align:center}
+    .sentence{font-size:24px;line-height:1.5;margin:20px 0;overflow-wrap:anywhere}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .choice{padding:14px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;text-align:left;overflow-wrap:anywhere}
+    .choice.correct{border-color:#16a34a;background:#f0fdf4}.choice.wrong{border-color:#dc2626;background:#fef2f2}
+    .hidden{display:none!important}.empty{padding:28px;text-align:center;color:var(--sub)}
+    .sticky-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    /* iPhone / smartphone */
+    @media(max-width:800px){
+      body{background:#fff}
+      .app{padding:10px 10px calc(18px + env(safe-area-inset-bottom))}
+      .top{padding:2px 2px 4px;gap:8px}
+      .brand{font-size:22px}
+      .top>div:first-child .muted{display:none}
+      .top>.row{margin-left:auto;flex-wrap:nowrap}
+      .top .btn{padding:7px 9px;font-size:12px}
+      .grid{display:block;margin-top:8px}
+      aside.card{padding:10px;margin-bottom:10px}
+      main.card{padding:10px;border-radius:14px}
+
+      /* 単語帳は縦長リストではなく横スクロールのタブ風 */
+      aside.card>.row{justify-content:space-between}
+      .deck-list{flex-direction:row;overflow-x:auto;gap:7px;padding:4px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      .deck-list::-webkit-scrollbar{display:none}
+      .deck-list .deck{width:auto;min-width:118px;flex:0 0 auto;padding:8px 10px}
+      aside.card hr{margin:5px 0 8px!important}
+      #starDeckBtn{width:auto;padding:8px 10px}
+      aside.card>.help{display:none}
+
+      main.card>.row:first-child{align-items:flex-start}
+      #deckTitle{font-size:20px!important;overflow-wrap:anywhere}
+      .sticky-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;margin-top:4px}
+      .sticky-actions .btn{width:100%;padding:10px 8px}
+
+      .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+      #searchInput{min-width:0!important;width:100%;font-size:16px}
+      #starFilter{width:auto!important;min-width:92px;padding:9px 7px}
+      .stats{gap:6px}
+      .pill{padding:5px 8px;font-size:11px}
+
+      /* 横長テーブルをスマホでは縦カードに変換 */
+      .table-wrap{overflow:visible;margin-top:8px!important}
+      .word-table{display:block;min-width:0;width:100%;border-collapse:separate}
+      .word-table thead{display:none}
+      .word-table tbody{display:block;width:100%}
+      .word-table tr{display:grid;width:100%;grid-template-columns:minmax(0,1fr) auto;gap:3px 8px;border:1px solid var(--line);border-radius:13px;padding:10px;margin:0 0 8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.025)}
+      .word-table td{display:block;width:auto;min-width:0;border:0;padding:0;text-align:left}
+      .word-table td:nth-child(1){grid-column:1;grid-row:1}
+      .word-table td:nth-child(2){grid-column:1;grid-row:2;font-size:14px;margin-top:1px}
+      .word-table td:nth-child(3){grid-column:1 / -1;grid-row:3;margin-top:5px;padding-top:6px;border-top:1px dashed var(--line);line-height:1.45}
+      .word-table td:nth-child(4){grid-column:2;grid-row:1 / span 2;align-self:center;white-space:nowrap}
+      .word-table td:nth-child(5){grid-column:2;grid-row:3;align-self:end;justify-self:end}
+      .word{font-size:17px;line-height:1.25}
+      .example{font-size:12px;max-width:none}
+      .stars button{font-size:22px;padding:0 1px}
+      .word-table .btn.small{padding:4px 7px;font-size:11px}
+
+      .choices{grid-template-columns:1fr}
+      .sentence{font-size:19px;margin:16px 0}
+      .testbox{padding:16px 2px}
+      .choice{padding:12px}
+      dialog{width:calc(100% - 16px);border-radius:14px}
+      .modal{padding:14px}
+      textarea{font-size:16px}
+      #testDialog .row select{flex:1;min-width:0;width:auto!important}
+    }
+
+    @media(max-width:390px){
+      .app{padding-left:7px;padding-right:7px}
+      .card{padding:9px}
+      .btn{padding-left:9px;padding-right:9px}
+      .toolbar{grid-template-columns:minmax(0,1fr) 88px}
+      #starFilter{min-width:0;width:88px!important;font-size:13px}
+    }
   </style>
 </head>
 <body>
@@ -59,7 +166,7 @@
 
 <dialog id="importDialog"><div class="modal"><h2>一括インポート</h2>
   <div class="help">1行1語で貼り付けます。<b>英単語[TAB]日本語[TAB]例文（任意）</b><br>カンマ区切りにも対応。例文に英単語が含まれている場合、テストでは自動で空欄になります。</div>
-  <textarea id="importText" rows="12" placeholder="reluctant\t気が進まない\tHe was reluctant to accept the offer.\ninevitable\t避けられない\tThe result seemed inevitable."></textarea>
+  <textarea id="importText" rows="12" placeholder="reluctant&#9;気が進まない&#9;He was reluctant to accept the offer.&#10;inevitable&#9;避けられない&#9;The result seemed inevitable."></textarea>
   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close="importDialog">キャンセル</button><button class="btn primary" id="doImportBtn">インポート</button></div>
 </div></dialog>
 
@@ -81,7 +188,7 @@ let testState=null;
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
 function loadState(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&Array.isArray(x.decks))return x}catch(e){}return {decks:[{id:uid(),name:'My Words',words:[]}]} }
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-function esc(s=''){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function currentDeck(){return state.decks.find(d=>d.id===activeDeckId)}
 function allStarred(){return state.decks.flatMap(d=>d.words.map(w=>({...w,deckName:d.name}))).filter(w=>w.star>0)}
 function getVisibleWords(){let words=starMode?allStarred():[...(currentDeck()?.words||[])];const q=document.getElementById('searchInput').value.trim().toLowerCase();const f=document.getElementById('starFilter').value;if(q)words=words.filter(w=>(w.en+' '+w.jp+' '+(w.example||'')).toLowerCase().includes(q));if(f==='1')words=words.filter(w=>w.star>=1);if(f==='2')words=words.filter(w=>w.star>=2);return words}
@@ -103,20 +210,17 @@ function setStar(id,n){for(const d of state.decks){const w=d.words.find(x=>x.id=
 function deleteWord(id){for(const d of state.decks){const i=d.words.findIndex(x=>x.id===id);if(i>=0){d.words.splice(i,1);break}}save()}
 function parseImport(text){return text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{let p=line.split('\t');if(p.length<2)p=line.split(',');return {en:(p[0]||'').trim(),jp:(p[1]||'').trim(),example:p.slice(2).join(',').trim()}}).filter(x=>x.en&&x.jp)}
 function inferType(w){const jp=w.jp||'';const en=w.en.toLowerCase();if(/ly$/.test(en))return 'adv';if(/する|させる|になる|める|む|ぶ|く$/.test(jp))return 'verb';if(/な$|い$|的$/.test(jp)||/(ous|ful|less|able|ible|ive|al|ic|ent|ant)$/.test(en))return 'adj';return 'noun'}
-function makeSentence(w){if(w.example){const re=new RegExp(`\\b${w.en.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')}\\b`,'i');if(re.test(w.example))return w.example.replace(re,'____');}
+function makeSentence(w){if(w.example){const escaped=w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const re=new RegExp(`\\b${escaped}\\b`,'i');if(re.test(w.example))return w.example.replace(re,'____');}
   const t=inferType(w);const pools={verb:['They decided to ____ the plan before the deadline.','We need to ____ the issue carefully.','She tried to ____ the task on her own.'],adj:['The situation was surprisingly ____ for everyone involved.','His explanation was quite ____ in the end.','The result seemed ____ at first.'],adv:['She responded ____ to the question.','The team worked ____ throughout the project.','He spoke ____ during the meeting.'],noun:['The manager mentioned the ____ during the meeting.','This ____ became important later in the discussion.','They discussed the ____ in class yesterday.']};const a=pools[t];return a[Math.floor(Math.random()*a.length)]}
 function testPool(scope){let words=[];if(scope==='current')words=currentDeck()?.words||[];else words=allStarred().filter(w=>scope==='star2'?w.star>=2:w.star>=1);return words}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function buildQuestion(pool){if(pool.length<4)return null;const answer=pool[Math.floor(Math.random()*pool.length)];const distract=shuffle(pool.filter(w=>w.id!==answer.id)).slice(0,3);return {answer,choices:shuffle([answer,...distract]),sentence:makeSentence(answer)} }
 function showQuestion(){const q=testState.questions[testState.index];document.getElementById('testProgress').textContent=`${testState.index+1} / ${testState.questions.length}`;document.getElementById('sentence').textContent=q.sentence;document.getElementById('feedback').textContent='';document.getElementById('nextQBtn').classList.add('hidden');const box=document.getElementById('choices');box.innerHTML='';q.choices.forEach((w,i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;b.onclick=()=>answerChoice(b,w,q);box.appendChild(b)})}
-function answerChoice(btn,w,q){if(testState.answered)return;testState.answered=true;[...document.querySelectorAll('.choice')].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});if(w.id===q.answer.id){testState.score++;document.getElementById('feedback').textContent='正解！'}else{btn.classList.add('wrong');document.getElementById('feedback').textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}
-  document.getElementById('nextQBtn').classList.remove('hidden')}
+function answerChoice(btn,w,q){if(testState.answered)return;testState.answered=true;[...document.querySelectorAll('.choice')].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});if(w.id===q.answer.id){testState.score++;document.getElementById('feedback').textContent='正解！'}else{btn.classList.add('wrong');document.getElementById('feedback').textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}document.getElementById('nextQBtn').classList.remove('hidden')}
 
-// UI
 addDeckBtn.onclick=()=>{newDeckName.value='';deckDialog.showModal()};
 createDeckBtn.onclick=()=>{const name=newDeckName.value.trim();if(!name)return;const d={id:uid(),name,words:[]};state.decks.push(d);activeDeckId=d.id;starMode=false;deckDialog.close();save()};
 starDeckBtn.onclick=()=>{starMode=true;render()};
-importBtn.onclick=()=>{if(starMode){alert('星付き統合では直接追加できません。左から単語帳を選んでください。');return}importText.value='';importDialog.showModal()};
+importBtn.onclick=()=>{if(starMode){alert('星付き統合では直接追加できません。単語帳を選んでください。');return}importText.value='';importDialog.showModal()};
 doImportBtn.onclick=()=>{const d=currentDeck();if(!d)return;const rows=parseImport(importText.value);const existing=new Set(d.words.map(w=>w.en.toLowerCase()));let added=0;rows.forEach(r=>{if(!existing.has(r.en.toLowerCase())){d.words.push({id:uid(),...r,star:0});existing.add(r.en.toLowerCase());added++}});importDialog.close();save();alert(`${added}語を追加しました。`)};
 searchInput.oninput=render;starFilter.onchange=render;
 testBtn.onclick=()=>testDialog.showModal();

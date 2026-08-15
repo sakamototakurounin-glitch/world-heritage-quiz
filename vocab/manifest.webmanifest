@@ -1,0 +1,11 @@
+{
+  "name": "VocabStar - Offline English Vocabulary",
+  "short_name": "VocabStar",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f7fb",
+  "theme_color": "#111827",
+  "icons": [],
+  "id": "./",
+  "scope": "./"
+}

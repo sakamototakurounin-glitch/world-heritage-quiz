@@ -7,7 +7,10 @@
   <title>VocabStar - Offline English Vocabulary</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <style>
-    :root{--bg:#f6f7fb;--card:#fff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;--accent:#2563eb;--danger:#dc2626;--star:#f59e0b}
+    :root{
+      --bg:#f6f7fb;--card:#fff;--text:#111827;--sub:#6b7280;--line:#e5e7eb;
+      --accent:#2563eb;--accent-soft:#eff6ff;--danger:#dc2626;--star:#f59e0b;--green:#16a34a
+    }
     *{box-sizing:border-box}
     html,body{max-width:100%;overflow-x:hidden}
     body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
@@ -15,16 +18,14 @@
     button{touch-action:manipulation}
     .app{width:100%;max-width:1100px;margin:auto;padding:16px}
     .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-    .brand{font-size:24px;font-weight:800}
+    .brand{font-size:24px;font-weight:850}
     .muted{color:var(--sub);font-size:13px}
-    .grid{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;margin-top:14px}
+    .grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:14px}
     .card{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.03)}
-    .deck-list{display:flex;flex-direction:column;gap:8px}
-    .deck{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:left;cursor:pointer}
-    .deck.active{border-color:var(--accent);background:#eff6ff}
     .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;min-width:0}
     .grow{flex:1;min-width:0}
     .btn{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;cursor:pointer;white-space:nowrap}
+    .btn:hover{background:#f9fafb}
     .btn.primary{background:var(--accent);color:white;border-color:var(--accent)}
     .btn.danger{color:var(--danger)}
     .btn.small{padding:5px 8px;font-size:12px}
@@ -32,6 +33,21 @@
     .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;min-width:0}
     .stats{display:flex;gap:8px;flex-wrap:wrap}
     .pill{background:#f3f4f6;border-radius:999px;padding:6px 10px;font-size:12px}
+    .file-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .file-item{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff}
+    .file-item.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+    .file-main{display:flex;align-items:center;gap:6px}
+    .file-open{flex:1;border:0;background:transparent;text-align:left;padding:5px 4px;cursor:pointer;min-width:0}
+    .file-name{font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .file-actions{display:flex;gap:4px}
+    .icon-btn{border:0;background:transparent;padding:5px 6px;border-radius:8px;color:var(--sub);cursor:pointer}
+    .icon-btn:hover{background:#f3f4f6}
+    .star-views{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:5px}
+    .star-view{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 8px;font-size:12px;text-align:left;cursor:pointer}
+    .star-view.active{border-color:var(--star);background:#fffbeb}
+    .star-view b{color:#b45309}
+    .mode-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;padding:4px 8px;border-radius:999px}
+    .sticky-actions{display:flex;gap:8px;flex-wrap:wrap}
     .table-wrap{width:100%;overflow:auto}
     .word-table{width:100%;border-collapse:collapse;min-width:700px}
     .word-table th,.word-table td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
@@ -40,20 +56,38 @@
     .example{font-size:12px;color:var(--sub);max-width:360px;overflow-wrap:anywhere}
     .stars button{border:none;background:transparent;font-size:20px;cursor:pointer;padding:1px}
     .star-on{color:var(--star)}.star-off{color:#d1d5db}
-    dialog{border:none;border-radius:16px;padding:0;max-width:700px;width:calc(100% - 24px)}
-    dialog::backdrop{background:rgba(0,0,0,.35)}
-    .modal{padding:16px;max-height:88dvh;overflow:auto}
+    dialog{border:none;border-radius:16px;padding:0;max-width:760px;width:calc(100% - 24px)}
+    dialog::backdrop{background:rgba(0,0,0,.38)}
+    .modal{padding:16px;max-height:90dvh;overflow:auto}
     .modal h2{margin-top:0}
     .help{font-size:12px;color:var(--sub);line-height:1.6}
+    .hidden{display:none!important}
+    .empty{padding:28px;text-align:center;color:var(--sub)}
     .testbox{padding:24px;text-align:center}
     .sentence{font-size:24px;line-height:1.5;margin:20px 0;overflow-wrap:anywhere}
     .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .choice{padding:14px;border:1px solid var(--line);border-radius:12px;background:white;cursor:pointer;text-align:left;overflow-wrap:anywhere}
-    .choice.correct{border-color:#16a34a;background:#f0fdf4}.choice.wrong{border-color:#dc2626;background:#fef2f2}
-    .hidden{display:none!important}.empty{padding:28px;text-align:center;color:var(--sub)}
-    .sticky-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .choice.correct{border-color:#16a34a;background:#f0fdf4}
+    .choice.wrong{border-color:#dc2626;background:#fef2f2}
+    .flash-wrap{padding:10px 0 2px}
+    .flash-card{height:320px;perspective:1000px;cursor:pointer;user-select:none}
+    .flash-inner{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
+    .flash-card.flipped .flash-inner{transform:rotateY(180deg)}
+    .flash-face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:20px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.07)}
+    .flash-back{transform:rotateY(180deg)}
+    .flash-word{font-size:34px;font-weight:850;overflow-wrap:anywhere}
+    .flash-jp{font-size:25px;font-weight:750;line-height:1.4}
+    .flash-example{font-size:15px;color:var(--sub);line-height:1.6;margin-top:18px}
+    .flash-hint{position:absolute;bottom:16px;color:var(--sub);font-size:12px}
+    .flash-controls{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:12px}
+    .flash-progress{text-align:center;color:var(--sub);font-size:13px}
+    .flash-starbar{display:flex;justify-content:center;gap:6px;margin-top:10px}
+    .flash-starbar button{font-size:26px;border:0;background:transparent;cursor:pointer}
+    .scope-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:10px 0}
+    .scope-tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;cursor:pointer}
+    .scope-tab.active{border-color:var(--accent);background:var(--accent-soft);color:#1d4ed8;font-weight:700}
+    .file-note{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.55}
 
-    /* iPhone / smartphone */
     @media(max-width:800px){
       body{background:#fff}
       .app{padding:10px 10px calc(18px + env(safe-area-inset-bottom))}
@@ -65,28 +99,20 @@
       .grid{display:block;margin-top:8px}
       aside.card{padding:10px;margin-bottom:10px}
       main.card{padding:10px;border-radius:14px}
-
-      /* 単語帳は縦長リストではなく横スクロールのタブ風 */
-      aside.card>.row{justify-content:space-between}
-      .deck-list{flex-direction:row;overflow-x:auto;gap:7px;padding:4px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-      .deck-list::-webkit-scrollbar{display:none}
-      .deck-list .deck{width:auto;min-width:118px;flex:0 0 auto;padding:8px 10px}
-      aside.card hr{margin:5px 0 8px!important}
-      #starDeckBtn{width:auto;padding:8px 10px}
-      aside.card>.help{display:none}
-
+      .file-list{flex-direction:row;overflow-x:auto;gap:8px;padding:3px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      .file-list::-webkit-scrollbar{display:none}
+      .file-item{min-width:185px;flex:0 0 auto;padding:7px}
+      .file-actions{display:none}
+      .star-view{padding:6px 7px}
+      .file-note{display:none}
       main.card>.row:first-child{align-items:flex-start}
       #deckTitle{font-size:20px!important;overflow-wrap:anywhere}
-      .sticky-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;margin-top:4px}
-      .sticky-actions .btn{width:100%;padding:10px 8px}
-
-      .toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+      .sticky-actions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
+      .sticky-actions .btn{width:100%;padding:10px 5px;font-size:13px}
+      .toolbar{display:block}
       #searchInput{min-width:0!important;width:100%;font-size:16px}
-      #starFilter{width:auto!important;min-width:92px;padding:9px 7px}
       .stats{gap:6px}
       .pill{padding:5px 8px;font-size:11px}
-
-      /* 横長テーブルをスマホでは縦カードに変換 */
       .table-wrap{overflow:visible;margin-top:8px!important}
       .word-table{display:block;min-width:0;width:100%;border-collapse:separate}
       .word-table thead{display:none}
@@ -102,23 +128,25 @@
       .example{font-size:12px;max-width:none}
       .stars button{font-size:22px;padding:0 1px}
       .word-table .btn.small{padding:4px 7px;font-size:11px}
-
       .choices{grid-template-columns:1fr}
       .sentence{font-size:19px;margin:16px 0}
       .testbox{padding:16px 2px}
       .choice{padding:12px}
       dialog{width:calc(100% - 16px);border-radius:14px}
       .modal{padding:14px}
-      textarea{font-size:16px}
+      textarea,input{font-size:16px}
       #testDialog .row select{flex:1;min-width:0;width:auto!important}
+      .flash-card{height:300px}
+      .flash-word{font-size:31px}
+      .flash-jp{font-size:22px}
+      .flash-face{padding:20px}
     }
-
     @media(max-width:390px){
       .app{padding-left:7px;padding-right:7px}
       .card{padding:9px}
-      .btn{padding-left:9px;padding-right:9px}
-      .toolbar{grid-template-columns:minmax(0,1fr) 88px}
-      #starFilter{min-width:0;width:88px!important;font-size:13px}
+      .btn{padding-left:8px;padding-right:8px}
+      .sticky-actions .btn{font-size:12px}
+      .file-item{min-width:175px}
     }
   </style>
 </head>
@@ -131,22 +159,29 @@
 
   <div class="grid">
     <aside class="card">
-      <div class="row"><b>単語帳</b><button class="btn small" id="addDeckBtn">＋追加</button></div>
-      <div class="deck-list" id="deckList" style="margin-top:10px"></div>
-      <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
-      <button class="deck" id="starDeckBtn">⭐ 星付き統合</button>
-      <div class="help" style="margin-top:10px">複数の単語帳から★1以上・★★だけをまとめて復習できます。</div>
+      <div class="row"><b>単語帳ファイル</b><button class="btn small primary" id="addDeckBtn">＋ファイル</button></div>
+      <div class="file-list" id="deckList"></div>
+      <div class="file-note">各ファイルに「★1」「★★」の自動ビューが付きます。星を変更すると件数も自動更新されます。</div>
     </aside>
 
     <main class="card">
       <div class="row">
-        <div class="grow"><h2 id="deckTitle" style="margin:0 0 4px">単語帳</h2><div class="muted" id="deckMeta"></div></div>
-        <div class="sticky-actions"><button class="btn" id="importBtn">一括インポート</button><button class="btn primary" id="testBtn">4択テスト</button></div>
+        <div class="grow">
+          <div class="row" style="gap:6px">
+            <h2 id="deckTitle" style="margin:0 0 4px">単語帳</h2>
+            <span class="mode-badge hidden" id="modeBadge"></span>
+          </div>
+          <div class="muted" id="deckMeta"></div>
+        </div>
+        <div class="sticky-actions">
+          <button class="btn" id="importBtn">インポート</button>
+          <button class="btn" id="flashBtn">カード</button>
+          <button class="btn primary" id="testBtn">4択</button>
+        </div>
       </div>
 
       <div class="toolbar">
         <input class="input grow" style="min-width:200px" id="searchInput" placeholder="英単語 / 日本語で検索">
-        <select id="starFilter" style="width:auto"><option value="all">星すべて</option><option value="1">★以上</option><option value="2">★★のみ</option></select>
       </div>
 
       <div class="stats" id="stats"></div>
@@ -157,78 +192,415 @@
           <tbody id="wordBody"></tbody>
         </table>
       </div>
-      <div class="empty hidden" id="emptyState">単語がありません。「一括インポート」から追加できます。</div>
+      <div class="empty hidden" id="emptyState">この表示に該当する単語がありません。</div>
     </main>
   </div>
 </div>
 
-<dialog id="deckDialog"><div class="modal"><h2>単語帳を追加</h2><input class="input" id="newDeckName" placeholder="例：英検準1級 Week 1"><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close="deckDialog">キャンセル</button><button class="btn primary" id="createDeckBtn">作成</button></div></div></dialog>
-
-<dialog id="importDialog"><div class="modal"><h2>一括インポート</h2>
-  <div class="help">1行1語で貼り付けます。<b>英単語[TAB]日本語[TAB]例文（任意）</b><br>カンマ区切りにも対応。例文に英単語が含まれている場合、テストでは自動で空欄になります。</div>
-  <textarea id="importText" rows="12" placeholder="reluctant&#9;気が進まない&#9;He was reluctant to accept the offer.&#10;inevitable&#9;避けられない&#9;The result seemed inevitable."></textarea>
-  <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close="importDialog">キャンセル</button><button class="btn primary" id="doImportBtn">インポート</button></div>
+<dialog id="deckDialog"><div class="modal">
+  <h2>単語帳ファイルを作成</h2>
+  <input class="input" id="newDeckName" placeholder="例：英検準1級 Week 1">
+  <div class="help" style="margin-top:8px">ファイルを作ると、その中に「通常」「★1」「★★」の3つの表示が自動で用意されます。</div>
+  <div class="row" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn" data-close="deckDialog">キャンセル</button><button class="btn primary" id="createDeckBtn">作成</button>
+  </div>
 </div></dialog>
 
-<dialog id="testDialog"><div class="modal"><div class="row"><h2 style="margin:0" class="grow">英文4択テスト</h2><button class="btn" data-close="testDialog">終了</button></div>
-  <div class="row" style="margin-top:10px"><select id="testScope" style="width:auto"><option value="current">現在の単語帳</option><option value="star1">★以上</option><option value="star2">★★のみ</option></select><button class="btn primary" id="startTestBtn">テスト開始</button></div>
-  <div class="testbox hidden" id="testBox"><div class="muted" id="testProgress"></div><div class="sentence" id="sentence"></div><div class="choices" id="choices"></div><div id="feedback" style="margin-top:14px;font-weight:700"></div><button class="btn primary hidden" id="nextQBtn" style="margin-top:14px">次の問題</button></div>
+<dialog id="renameDialog"><div class="modal">
+  <h2>ファイル名を変更</h2>
+  <input class="input" id="renameDeckName">
+  <div class="row" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn" data-close="renameDialog">キャンセル</button><button class="btn primary" id="doRenameDeckBtn">変更</button>
+  </div>
+</div></dialog>
+
+<dialog id="importDialog"><div class="modal">
+  <h2>一括インポート</h2>
+  <div class="help">1行1語。<b>英単語[TAB]日本語[TAB]例文（任意）</b><br>カンマ区切りにも対応します。</div>
+  <textarea id="importText" rows="12" placeholder="reluctant&#9;気が進まない&#9;He was reluctant to accept the offer.&#10;inevitable&#9;避けられない&#9;The result seemed inevitable."></textarea>
+  <div class="row" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn" data-close="importDialog">キャンセル</button><button class="btn primary" id="doImportBtn">インポート</button>
+  </div>
+</div></dialog>
+
+<dialog id="flashDialog"><div class="modal">
+  <div class="row"><h2 style="margin:0" class="grow">フラッシュカード</h2><button class="btn" data-close="flashDialog">終了</button></div>
+  <div class="scope-tabs" id="flashScopeTabs">
+    <button class="scope-tab active" data-scope="all">通常</button>
+    <button class="scope-tab" data-scope="star1">★1</button>
+    <button class="scope-tab" data-scope="star2">★★</button>
+  </div>
+  <div class="row" style="justify-content:space-between">
+    <div class="muted" id="flashFileName"></div>
+    <button class="btn small" id="shuffleFlashBtn">シャッフル</button>
+  </div>
+  <div class="empty" id="flashEmpty">対象の単語がありません。</div>
+  <div class="flash-wrap hidden" id="flashWrap">
+    <div class="flash-card" id="flashCard" aria-label="タップして裏返す">
+      <div class="flash-inner">
+        <div class="flash-face flash-front">
+          <div class="flash-word" id="flashWord"></div>
+          <div class="flash-hint">タップして意味を見る</div>
+        </div>
+        <div class="flash-face flash-back">
+          <div class="flash-jp" id="flashJp"></div>
+          <div class="flash-example" id="flashExample"></div>
+          <div class="flash-hint">タップして英単語に戻る</div>
+        </div>
+      </div>
+    </div>
+    <div class="flash-starbar">
+      <button id="flashStar1" aria-label="星1">★</button>
+      <button id="flashStar2" aria-label="星2">★</button>
+    </div>
+    <div class="flash-controls">
+      <button class="btn" id="prevFlashBtn">← 前</button>
+      <div class="flash-progress" id="flashProgress"></div>
+      <button class="btn primary" id="nextFlashBtn">次 →</button>
+    </div>
+  </div>
+</div></dialog>
+
+<dialog id="testDialog"><div class="modal">
+  <div class="row"><h2 style="margin:0" class="grow">英文4択テスト</h2><button class="btn" data-close="testDialog">終了</button></div>
+  <div class="row" style="margin-top:10px">
+    <select id="testScope" style="width:auto">
+      <option value="all">現在のファイル・通常</option>
+      <option value="star1">現在のファイル・★1</option>
+      <option value="star2">現在のファイル・★★</option>
+    </select>
+    <button class="btn primary" id="startTestBtn">テスト開始</button>
+  </div>
+  <div class="testbox hidden" id="testBox">
+    <div class="muted" id="testProgress"></div>
+    <div class="sentence" id="sentence"></div>
+    <div class="choices" id="choices"></div>
+    <div id="feedback" style="margin-top:14px;font-weight:700"></div>
+    <button class="btn primary hidden" id="nextQBtn" style="margin-top:14px">次の問題</button>
+  </div>
   <div class="empty" id="testEmpty">対象を選んで「テスト開始」を押してください。</div>
 </div></dialog>
 
-<dialog id="restoreDialog"><div class="modal"><h2>バックアップから復元</h2><textarea id="restoreText" rows="10" placeholder="バックアップJSONを貼り付け"></textarea><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" data-close="restoreDialog">キャンセル</button><button class="btn primary" id="doRestoreBtn">復元</button></div></div></dialog>
+<dialog id="restoreDialog"><div class="modal">
+  <h2>バックアップから復元</h2>
+  <textarea id="restoreText" rows="10" placeholder="バックアップJSONを貼り付け"></textarea>
+  <div class="row" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn" data-close="restoreDialog">キャンセル</button><button class="btn primary" id="doRestoreBtn">復元</button>
+  </div>
+</div></dialog>
 
 <script>
 const KEY='vocabstar_v1';
 let state=loadState();
 let activeDeckId=state.decks[0]?.id||null;
-let starMode=false;
+let viewMode='all'; // all | star1 | star2
 let testState=null;
+let flashState={scope:'all',items:[],index:0};
 
 function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
-function loadState(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&Array.isArray(x.decks))return x}catch(e){}return {decks:[{id:uid(),name:'My Words',words:[]}]} }
+function loadState(){
+  try{
+    const x=JSON.parse(localStorage.getItem(KEY));
+    if(x&&Array.isArray(x.decks)&&x.decks.length)return x
+  }catch(e){}
+  return {decks:[{id:uid(),name:'My Words',words:[]}]}
+}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function currentDeck(){return state.decks.find(d=>d.id===activeDeckId)}
-function allStarred(){return state.decks.flatMap(d=>d.words.map(w=>({...w,deckName:d.name}))).filter(w=>w.star>0)}
-function getVisibleWords(){let words=starMode?allStarred():[...(currentDeck()?.words||[])];const q=document.getElementById('searchInput').value.trim().toLowerCase();const f=document.getElementById('starFilter').value;if(q)words=words.filter(w=>(w.en+' '+w.jp+' '+(w.example||'')).toLowerCase().includes(q));if(f==='1')words=words.filter(w=>w.star>=1);if(f==='2')words=words.filter(w=>w.star>=2);return words}
+function wordsFor(deck,mode='all'){
+  if(!deck)return [];
+  if(mode==='star1')return deck.words.filter(w=>w.star===1);
+  if(mode==='star2')return deck.words.filter(w=>w.star===2);
+  return deck.words;
+}
+function currentVisibleWords(){
+  let words=[...wordsFor(currentDeck(),viewMode)];
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  if(q)words=words.filter(w=>(w.en+' '+w.jp+' '+(w.example||'')).toLowerCase().includes(q));
+  return words;
+}
+function modeLabel(mode){
+  if(mode==='star1')return '★1';
+  if(mode==='star2')return '★★';
+  return '通常';
+}
+function openDeck(id,mode='all'){
+  activeDeckId=id;viewMode=mode;
+  document.getElementById('searchInput').value='';
+  render();
+}
 function render(){
   const list=document.getElementById('deckList');list.innerHTML='';
-  state.decks.forEach(d=>{const b=document.createElement('button');b.className='deck '+(!starMode&&d.id===activeDeckId?'active':'');b.innerHTML=`<b>${esc(d.name)}</b><div class="muted">${d.words.length}語</div>`;b.onclick=()=>{activeDeckId=d.id;starMode=false;render()};list.appendChild(b)});
-  document.getElementById('starDeckBtn').classList.toggle('active',starMode);
-  const words=getVisibleWords(); const raw=starMode?allStarred():(currentDeck()?.words||[]);
-  document.getElementById('deckTitle').textContent=starMode?'⭐ 星付き統合':(currentDeck()?.name||'単語帳');
-  document.getElementById('deckMeta').textContent=starMode?'すべての単語帳から自動統合':`${raw.length}語`;
-  document.getElementById('stats').innerHTML=`<span class="pill">全 ${raw.length}</span><span class="pill">★以上 ${raw.filter(w=>w.star>=1).length}</span><span class="pill">★★ ${raw.filter(w=>w.star>=2).length}</span>`;
+  state.decks.forEach(d=>{
+    const item=document.createElement('div');
+    item.className='file-item '+(d.id===activeDeckId?'active':'');
+    const c1=d.words.filter(w=>w.star===1).length;
+    const c2=d.words.filter(w=>w.star===2).length;
+    item.innerHTML=`
+      <div class="file-main">
+        <button class="file-open">
+          <div class="file-name">${esc(d.name)}</div>
+          <div class="muted">${d.words.length}語</div>
+        </button>
+        <div class="file-actions">
+          <button class="icon-btn rename" title="名前変更">✎</button>
+          <button class="icon-btn delete" title="削除">×</button>
+        </div>
+      </div>
+      <div class="star-views">
+        <button class="star-view s1 ${d.id===activeDeckId&&viewMode==='star1'?'active':''}"><b>★1</b> ${c1}語</button>
+        <button class="star-view s2 ${d.id===activeDeckId&&viewMode==='star2'?'active':''}"><b>★★</b> ${c2}語</button>
+      </div>`;
+    item.querySelector('.file-open').onclick=()=>openDeck(d.id,'all');
+    item.querySelector('.s1').onclick=()=>openDeck(d.id,'star1');
+    item.querySelector('.s2').onclick=()=>openDeck(d.id,'star2');
+    item.querySelector('.rename').onclick=()=>openRename(d.id);
+    item.querySelector('.delete').onclick=()=>deleteDeck(d.id);
+    list.appendChild(item);
+  });
+
+  const deck=currentDeck();
+  const words=currentVisibleWords();
+  const raw=deck?.words||[];
+  document.getElementById('deckTitle').textContent=deck?.name||'単語帳';
+  const badge=document.getElementById('modeBadge');
+  if(viewMode==='all'){badge.classList.add('hidden')}else{badge.textContent=modeLabel(viewMode);badge.classList.remove('hidden')}
+  document.getElementById('deckMeta').textContent=`${modeLabel(viewMode)}：${wordsFor(deck,viewMode).length}語`;
+  document.getElementById('stats').innerHTML=`
+    <span class="pill">全 ${raw.length}</span>
+    <span class="pill">★1 ${raw.filter(w=>w.star===1).length}</span>
+    <span class="pill">★★ ${raw.filter(w=>w.star===2).length}</span>`;
+
   const body=document.getElementById('wordBody');body.innerHTML='';
-  words.forEach(w=>{const tr=document.createElement('tr');tr.innerHTML=`<td><div class="word">${esc(w.en)}</div>${starMode?`<div class="muted">${esc(w.deckName||'')}</div>`:''}</td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
-    const stars=tr.children[3];[1,2].forEach(n=>{const sb=document.createElement('button');sb.textContent='★';sb.className=w.star>=n?'star-on':'star-off';sb.title=`★${n}`;sb.onclick=()=>setStar(w.id,n);stars.appendChild(sb)});
-    tr.children[4].querySelector('button').onclick=()=>deleteWord(w.id);body.appendChild(tr)});
+  words.forEach(w=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><div class="word">${esc(w.en)}</div></td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
+    const stars=tr.children[3];
+    [1,2].forEach(n=>{
+      const sb=document.createElement('button');
+      sb.textContent='★';
+      sb.className=w.star>=n?'star-on':'star-off';
+      sb.title=`★${n}`;
+      sb.onclick=()=>setStar(w.id,n);
+      stars.appendChild(sb)
+    });
+    tr.children[4].querySelector('button').onclick=()=>deleteWord(w.id);
+    body.appendChild(tr)
+  });
   document.getElementById('emptyState').classList.toggle('hidden',words.length>0);
 }
-function setStar(id,n){for(const d of state.decks){const w=d.words.find(x=>x.id===id);if(w){w.star=(w.star===n?0:n);break}}save()}
-function deleteWord(id){for(const d of state.decks){const i=d.words.findIndex(x=>x.id===id);if(i>=0){d.words.splice(i,1);break}}save()}
-function parseImport(text){return text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{let p=line.split('\t');if(p.length<2)p=line.split(',');return {en:(p[0]||'').trim(),jp:(p[1]||'').trim(),example:p.slice(2).join(',').trim()}}).filter(x=>x.en&&x.jp)}
-function inferType(w){const jp=w.jp||'';const en=w.en.toLowerCase();if(/ly$/.test(en))return 'adv';if(/する|させる|になる|める|む|ぶ|く$/.test(jp))return 'verb';if(/な$|い$|的$/.test(jp)||/(ous|ful|less|able|ible|ive|al|ic|ent|ant)$/.test(en))return 'adj';return 'noun'}
-function makeSentence(w){if(w.example){const escaped=w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const re=new RegExp(`\\b${escaped}\\b`,'i');if(re.test(w.example))return w.example.replace(re,'____');}
-  const t=inferType(w);const pools={verb:['They decided to ____ the plan before the deadline.','We need to ____ the issue carefully.','She tried to ____ the task on her own.'],adj:['The situation was surprisingly ____ for everyone involved.','His explanation was quite ____ in the end.','The result seemed ____ at first.'],adv:['She responded ____ to the question.','The team worked ____ throughout the project.','He spoke ____ during the meeting.'],noun:['The manager mentioned the ____ during the meeting.','This ____ became important later in the discussion.','They discussed the ____ in class yesterday.']};const a=pools[t];return a[Math.floor(Math.random()*a.length)]}
-function testPool(scope){let words=[];if(scope==='current')words=currentDeck()?.words||[];else words=allStarred().filter(w=>scope==='star2'?w.star>=2:w.star>=1);return words}
-function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function showQuestion(){const q=testState.questions[testState.index];document.getElementById('testProgress').textContent=`${testState.index+1} / ${testState.questions.length}`;document.getElementById('sentence').textContent=q.sentence;document.getElementById('feedback').textContent='';document.getElementById('nextQBtn').classList.add('hidden');const box=document.getElementById('choices');box.innerHTML='';q.choices.forEach((w,i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;b.onclick=()=>answerChoice(b,w,q);box.appendChild(b)})}
-function answerChoice(btn,w,q){if(testState.answered)return;testState.answered=true;[...document.querySelectorAll('.choice')].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});if(w.id===q.answer.id){testState.score++;document.getElementById('feedback').textContent='正解！'}else{btn.classList.add('wrong');document.getElementById('feedback').textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}document.getElementById('nextQBtn').classList.remove('hidden')}
+function setStar(id,n){
+  const d=currentDeck();
+  const w=d?.words.find(x=>x.id===id);
+  if(!w)return;
+  w.star=(w.star===n?0:n);
+  save();
+  if(document.getElementById('flashDialog').open)refreshFlashAfterStar(id);
+}
+function deleteWord(id){
+  const d=currentDeck();if(!d)return;
+  const i=d.words.findIndex(x=>x.id===id);
+  if(i>=0)d.words.splice(i,1);
+  save()
+}
+function openRename(id){
+  const d=state.decks.find(x=>x.id===id);if(!d)return;
+  renameDialog.dataset.id=id;
+  renameDeckName.value=d.name;
+  renameDialog.showModal()
+}
+function deleteDeck(id){
+  const d=state.decks.find(x=>x.id===id);if(!d)return;
+  if(state.decks.length===1){alert('単語帳ファイルは最低1つ必要です。');return}
+  if(!confirm(`「${d.name}」を削除しますか？ 中の単語も削除されます。`))return;
+  state.decks=state.decks.filter(x=>x.id!==id);
+  if(activeDeckId===id)activeDeckId=state.decks[0].id;
+  viewMode='all';save()
+}
+function parseImport(text){
+  return text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(line=>{
+    let p=line.split('\t');
+    if(p.length<2)p=line.split(',');
+    return {en:(p[0]||'').trim(),jp:(p[1]||'').trim(),example:p.slice(2).join(',').trim()}
+  }).filter(x=>x.en&&x.jp)
+}
+function inferType(w){
+  const jp=w.jp||'';const en=w.en.toLowerCase();
+  if(/ly$/.test(en))return 'adv';
+  if(/する|させる|になる|める|む|ぶ|く$/.test(jp))return 'verb';
+  if(/な$|い$|的$/.test(jp)||/(ous|ful|less|able|ible|ive|al|ic|ent|ant)$/.test(en))return 'adj';
+  return 'noun'
+}
+function makeSentence(w){
+  if(w.example){
+    const escaped=w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    const re=new RegExp(`\\b${escaped}\\b`,'i');
+    if(re.test(w.example))return w.example.replace(re,'____')
+  }
+  const t=inferType(w);
+  const pools={
+    verb:['They decided to ____ the plan before the deadline.','We need to ____ the issue carefully.','She tried to ____ the task on her own.'],
+    adj:['The situation was surprisingly ____ for everyone involved.','His explanation was quite ____ in the end.','The result seemed ____ at first.'],
+    adv:['She responded ____ to the question.','The team worked ____ throughout the project.','He spoke ____ during the meeting.'],
+    noun:['The manager mentioned the ____ during the meeting.','This ____ became important later in the discussion.','They discussed the ____ in class yesterday.']
+  };
+  const a=pools[t];return a[Math.floor(Math.random()*a.length)]
+}
+function shuffle(a){
+  const x=[...a];
+  for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}
+  return x
+}
 
+/* Flashcards */
+function openFlash(){
+  flashState.scope=viewMode;
+  document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(b=>b.classList.toggle('active',b.dataset.scope===flashState.scope));
+  flashDialog.showModal();
+  buildFlash(false)
+}
+function buildFlash(doShuffle=false){
+  const d=currentDeck();
+  let items=[...wordsFor(d,flashState.scope)];
+  if(doShuffle)items=shuffle(items);
+  flashState.items=items;flashState.index=0;
+  flashFileName.textContent=`${d?.name||''} / ${modeLabel(flashState.scope)}`;
+  flashEmpty.classList.toggle('hidden',items.length>0);
+  flashWrap.classList.toggle('hidden',items.length===0);
+  if(items.length)showFlash()
+}
+function showFlash(){
+  const w=flashState.items[flashState.index];if(!w)return;
+  flashCard.classList.remove('flipped');
+  flashWord.textContent=w.en;
+  flashJp.textContent=w.jp;
+  flashExample.textContent=w.example||'';
+  flashProgress.textContent=`${flashState.index+1} / ${flashState.items.length}`;
+  flashStar1.className=w.star>=1?'star-on':'star-off';
+  flashStar2.className=w.star>=2?'star-on':'star-off'
+}
+function refreshFlashAfterStar(id){
+  if(!flashState.items.length)return;
+  const current=flashState.items[flashState.index];
+  const fresh=currentDeck()?.words.find(w=>w.id===id);
+  if(fresh&&current?.id===id){
+    current.star=fresh.star;
+    flashStar1.className=fresh.star>=1?'star-on':'star-off';
+    flashStar2.className=fresh.star>=2?'star-on':'star-off'
+  }
+  if(flashState.scope!=='all'){
+    flashState.items=wordsFor(currentDeck(),flashState.scope);
+    if(!flashState.items.length){
+      flashEmpty.classList.remove('hidden');flashWrap.classList.add('hidden');return
+    }
+    flashState.index=Math.min(flashState.index,flashState.items.length-1);
+    showFlash()
+  }
+}
+
+/* Test */
+function testPool(scope){return wordsFor(currentDeck(),scope)}
+function showQuestion(){
+  const q=testState.questions[testState.index];
+  testProgress.textContent=`${testState.index+1} / ${testState.questions.length}`;
+  sentence.textContent=q.sentence;feedback.textContent='';nextQBtn.classList.add('hidden');
+  choices.innerHTML='';
+  q.choices.forEach((w,i)=>{
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;
+    b.onclick=()=>answerChoice(b,w,q);choices.appendChild(b)
+  })
+}
+function answerChoice(btn,w,q){
+  if(testState.answered)return;testState.answered=true;
+  [...document.querySelectorAll('.choice')].forEach(b=>{if(b.textContent.includes(q.answer.en))b.classList.add('correct')});
+  if(w.id===q.answer.id){testState.score++;feedback.textContent='正解！'}
+  else{btn.classList.add('wrong');feedback.textContent=`不正解。正解は ${q.answer.en}（${q.answer.jp}）`}
+  nextQBtn.classList.remove('hidden')
+}
+
+/* UI */
 addDeckBtn.onclick=()=>{newDeckName.value='';deckDialog.showModal()};
-createDeckBtn.onclick=()=>{const name=newDeckName.value.trim();if(!name)return;const d={id:uid(),name,words:[]};state.decks.push(d);activeDeckId=d.id;starMode=false;deckDialog.close();save()};
-starDeckBtn.onclick=()=>{starMode=true;render()};
-importBtn.onclick=()=>{if(starMode){alert('星付き統合では直接追加できません。単語帳を選んでください。');return}importText.value='';importDialog.showModal()};
-doImportBtn.onclick=()=>{const d=currentDeck();if(!d)return;const rows=parseImport(importText.value);const existing=new Set(d.words.map(w=>w.en.toLowerCase()));let added=0;rows.forEach(r=>{if(!existing.has(r.en.toLowerCase())){d.words.push({id:uid(),...r,star:0});existing.add(r.en.toLowerCase());added++}});importDialog.close();save();alert(`${added}語を追加しました。`)};
-searchInput.oninput=render;starFilter.onchange=render;
-testBtn.onclick=()=>testDialog.showModal();
-startTestBtn.onclick=()=>{const pool=testPool(testScope.value);if(pool.length<4){alert('4択テストには対象単語が4語以上必要です。');return}const count=Math.min(20,pool.length);const qs=shuffle(pool).slice(0,count).map(ans=>{const distract=shuffle(pool.filter(w=>w.id!==ans.id)).slice(0,3);return {answer:ans,choices:shuffle([ans,...distract]),sentence:makeSentence(ans)}});testState={questions:qs,index:0,score:0,answered:false};testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQuestion()};
-nextQBtn.onclick=()=>{testState.index++;testState.answered=false;if(testState.index>=testState.questions.length){sentence.textContent=`終了：${testState.score} / ${testState.questions.length} 正解`;choices.innerHTML='';feedback.textContent='';nextQBtn.classList.add('hidden');testProgress.textContent='';return}showQuestion()};
-exportBtn.onclick=()=>{const txt=JSON.stringify(state);navigator.clipboard?.writeText(txt).then(()=>alert('バックアップJSONをコピーしました。')).catch(()=>prompt('このJSONをコピーしてください',txt))};
+createDeckBtn.onclick=()=>{
+  const name=newDeckName.value.trim();if(!name)return;
+  const d={id:uid(),name,words:[]};state.decks.push(d);activeDeckId=d.id;viewMode='all';
+  deckDialog.close();save()
+};
+doRenameDeckBtn.onclick=()=>{
+  const d=state.decks.find(x=>x.id===renameDialog.dataset.id);
+  const name=renameDeckName.value.trim();
+  if(!d||!name)return;
+  d.name=name;renameDialog.close();save()
+};
+importBtn.onclick=()=>{
+  if(viewMode!=='all'){alert('インポートはファイルの「通常」を開いてから行ってください。');return}
+  importText.value='';importDialog.showModal()
+};
+doImportBtn.onclick=()=>{
+  const d=currentDeck();if(!d)return;
+  const rows=parseImport(importText.value);
+  const existing=new Set(d.words.map(w=>w.en.toLowerCase()));
+  let added=0;
+  rows.forEach(r=>{
+    if(!existing.has(r.en.toLowerCase())){
+      d.words.push({id:uid(),...r,star:0});existing.add(r.en.toLowerCase());added++
+    }
+  });
+  importDialog.close();save();alert(`${added}語を追加しました。`)
+};
+searchInput.oninput=render;
+
+flashBtn.onclick=openFlash;
+flashCard.onclick=()=>flashCard.classList.toggle('flipped');
+document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(b=>b.onclick=()=>{
+  flashState.scope=b.dataset.scope;
+  document.querySelectorAll('#flashScopeTabs .scope-tab').forEach(x=>x.classList.toggle('active',x===b));
+  buildFlash(false)
+});
+shuffleFlashBtn.onclick=()=>buildFlash(true);
+prevFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index-1+flashState.items.length)%flashState.items.length;showFlash()};
+nextFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index+1)%flashState.items.length;showFlash()};
+flashStar1.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,1)};
+flashStar2.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,2)};
+
+testBtn.onclick=()=>{
+  testScope.value=viewMode;
+  testDialog.showModal()
+};
+startTestBtn.onclick=()=>{
+  const pool=testPool(testScope.value);
+  if(pool.length<4){alert('4択テストには対象単語が4語以上必要です。');return}
+  const count=Math.min(20,pool.length);
+  const qs=shuffle(pool).slice(0,count).map(ans=>{
+    const distract=shuffle(pool.filter(w=>w.id!==ans.id)).slice(0,3);
+    return {answer:ans,choices:shuffle([ans,...distract]),sentence:makeSentence(ans)}
+  });
+  testState={questions:qs,index:0,score:0,answered:false};
+  testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQuestion()
+};
+nextQBtn.onclick=()=>{
+  testState.index++;testState.answered=false;
+  if(testState.index>=testState.questions.length){
+    sentence.textContent=`終了：${testState.score} / ${testState.questions.length} 正解`;
+    choices.innerHTML='';feedback.textContent='';nextQBtn.classList.add('hidden');testProgress.textContent='';return
+  }
+  showQuestion()
+};
+
+exportBtn.onclick=()=>{
+  const txt=JSON.stringify(state);
+  navigator.clipboard?.writeText(txt).then(()=>alert('バックアップJSONをコピーしました。')).catch(()=>prompt('このJSONをコピーしてください',txt))
+};
 restoreBtn.onclick=()=>{restoreText.value='';restoreDialog.showModal()};
-doRestoreBtn.onclick=()=>{try{const x=JSON.parse(restoreText.value);if(!x||!Array.isArray(x.decks))throw 0;state=x;activeDeckId=state.decks[0]?.id||null;starMode=false;localStorage.setItem(KEY,JSON.stringify(state));restoreDialog.close();render();alert('復元しました。')}catch(e){alert('バックアップ形式が正しくありません。')}};
+doRestoreBtn.onclick=()=>{
+  try{
+    const x=JSON.parse(restoreText.value);
+    if(!x||!Array.isArray(x.decks)||!x.decks.length)throw 0;
+    state=x;activeDeckId=state.decks[0].id;viewMode='all';
+    localStorage.setItem(KEY,JSON.stringify(state));restoreDialog.close();render();alert('復元しました。')
+  }catch(e){alert('バックアップ形式が正しくありません。')}
+};
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
 if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
 render();

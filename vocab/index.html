@@ -110,7 +110,9 @@
       .autoViews{margin-top:6px}
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
+      .stickyActions.exporting{grid-template-columns:1fr 1fr 1fr 1fr}
       .stickyActions .btn{width:100%;padding:9px 4px;font-size:12px}
+      .stickyActions.exporting .btn{padding-left:3px;padding-right:3px;font-size:11px}
       #searchInput{font-size:16px}
       .tableWrap{overflow:visible}
       table{display:block;min-width:0;width:100%}
@@ -182,6 +184,7 @@
         </div>
         <div class="stickyActions">
           <button class="btn" id="importBtn">インポート</button>
+          <button class="btn hidden" id="starExportBtn">エクスポート</button>
           <button class="btn" id="flashBtn">カード</button>
           <button class="btn primary" id="testBtn">4択</button>
         </div>
@@ -353,6 +356,9 @@ function render(){
   const raw=wordsForView();
   stats.innerHTML=`<span class="pill">表示 ${raw.length}</span><span class="pill">ファイル全体 ${fw.length}</span><span class="pill">★1 ${c1}</span><span class="pill">★★ ${c2}</span>`;
   importBtn.disabled=viewMode!=='list';
+  const isStarMerged=viewMode==='star1'||viewMode==='star2';
+  starExportBtn.classList.toggle('hidden',!isStarMerged);
+  document.querySelector('.stickyActions')?.classList.toggle('exporting',isStarMerged);
 
   const words=filteredWords();wordBody.innerHTML='';
   words.forEach(w=>{
@@ -452,8 +458,32 @@ nameSaveBtn.onclick=()=>{const n=nameInput.value.trim();if(!n||!nameAction)retur
 fileStar1Btn.onclick=()=>{viewMode='star1';searchInput.value='';render()};
 fileStar2Btn.onclick=()=>{viewMode='star2';searchInput.value='';render()};
 
+/* star merged export */
+function exportStarMerged(){
+  if(viewMode!=='star1'&&viewMode!=='star2')return;
+  const words=wordsForView();
+  if(!words.length){alert('エクスポートする単語がありません。');return}
+
+  const clean=s=>String(s??'').replace(/\t/g,' ').replace(/\r?\n/g,' ');
+  const text=words.map(w=>[clean(w.en),clean(w.jp),clean(w.example||'')].join('\t')).join('\n');
+  const level=viewMode==='star1'?'star1':'star2';
+  const safeFileName=(currentFile()?.name||'VocabStar').replace(/[\\/:*?"<>|]/g,'_');
+  const filename=`${safeFileName}_${level}_merged.tsv`;
+
+  const blob=new Blob([text],{type:'text/tab-separated-values;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
 /* import */
 importBtn.onclick=()=>{if(viewMode!=='list')return;importText.value='';importDialog.showModal()};
+starExportBtn.onclick=exportStarMerged;
 doImportBtn.onclick=()=>{
   const l=currentList(),rows=parseImport(importText.value),seen=new Set(l.words.map(w=>w.en.toLowerCase()));let added=0;
   rows.forEach(r=>{if(!seen.has(r.en.toLowerCase())){l.words.push({id:uid(),...r,star:0});seen.add(r.en.toLowerCase());added++}});

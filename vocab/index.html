@@ -33,8 +33,11 @@
     #fileSelect{font-weight:700}
     .subhead{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
     .listScroller{display:flex;flex-direction:column;gap:7px;margin-top:7px}
-    .listBtn{width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 9px;cursor:pointer}
-    .listBtn.active{border-color:var(--accent);background:var(--accentSoft)}
+    .listWrap{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:10px;padding:4px}
+    .listWrap.active{border-color:var(--accent);background:var(--accentSoft)}
+    .listBtn{width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:6px 5px;cursor:pointer;min-width:0}
+    .listActions{display:flex;gap:2px;align-items:center}
+    .listActions .iconbtn{font-size:12px;padding:5px 6px}
     .listTitle{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .listMeta{font-size:11px;color:var(--sub);margin-top:2px}
     .autoViews{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
@@ -101,7 +104,7 @@
       .help{display:none}
       .listScroller{flex-direction:row;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
       .listScroller::-webkit-scrollbar{display:none}
-      .listBtn{min-width:130px;max-width:180px;flex:0 0 auto}
+      .listWrap{min-width:165px;max-width:220px;flex:0 0 auto}
       .autoViews{margin-top:6px}
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
@@ -320,11 +323,13 @@ function render(){
   const f=currentFile();
   listScroller.innerHTML='';
   f.lists.forEach(l=>{
-    const b=document.createElement('button');b.className='listBtn '+(viewMode==='list'&&l.id===activeListId?'active':'');
-    b.innerHTML=`<div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div>`;
-    b.onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
-    b.oncontextmenu=e=>{e.preventDefault();openListMenu(l.id)};
-    listScroller.appendChild(b)
+    const wrap=document.createElement('div');
+    wrap.className='listWrap '+(viewMode==='list'&&l.id===activeListId?'active':'');
+    wrap.innerHTML=`<button class="listBtn"><div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div></button><div class="listActions"><button class="iconbtn listRename" title="名前変更">✎</button><button class="iconbtn listDelete" title="削除">×</button></div>`;
+    wrap.querySelector('.listBtn').onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
+    wrap.querySelector('.listRename').onclick=()=>renameList(l.id);
+    wrap.querySelector('.listDelete').onclick=()=>deleteList(l.id);
+    listScroller.appendChild(wrap)
   });
   const fw=fileWords(f);
   const c1=fw.filter(w=>w.star===1).length,c2=fw.filter(w=>w.star===2).length;
@@ -418,13 +423,16 @@ deleteFileBtn.onclick=()=>{
   state.files=state.files.filter(f=>f.id!==activeFileId);activeFileId=state.files[0].id;activeListId=state.files[0].lists[0].id;viewMode='list';save()
 };
 addListBtn.onclick=()=>openName('単語帳リストを作成','',name=>{const l=makeList(name);currentFile().lists.push(l);activeListId=l.id;viewMode='list';save()});
-function openListMenu(id){
-  const l=currentFile().lists.find(x=>x.id===id);
-  const choice=prompt(`単語帳「${l.name}」\n1 = 名前変更\n2 = 削除\n\n数字を入力`);
-  if(choice==='1')openName('単語帳名を変更',l.name,name=>{l.name=name;save()});
-  if(choice==='2'){
-    if(currentFile().lists.length===1){alert('単語帳は最低1つ必要です。');return}
-    if(confirm(`「${l.name}」を削除しますか？`)){currentFile().lists=currentFile().lists.filter(x=>x.id!==id);ensureActive();viewMode='list';save()}
+function renameList(id){
+  const l=currentFile().lists.find(x=>x.id===id);if(!l)return;
+  openName('単語帳名を変更',l.name,name=>{l.name=name;save()})
+}
+function deleteList(id){
+  const l=currentFile().lists.find(x=>x.id===id);if(!l)return;
+  if(currentFile().lists.length===1){alert('単語帳は最低1つ必要です。');return}
+  if(confirm(`「${l.name}」を削除しますか？`)){
+    currentFile().lists=currentFile().lists.filter(x=>x.id!==id);
+    ensureActive();viewMode='list';save()
   }
 }
 nameSaveBtn.onclick=()=>{const n=nameInput.value.trim();if(!n||!nameAction)return;nameAction(n);nameDialog.close();nameAction=null};

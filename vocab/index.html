@@ -105,6 +105,8 @@
       .listScroller{flex-direction:row;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:4px}
       .listScroller::-webkit-scrollbar{display:none}
       .listWrap{min-width:165px;max-width:220px;flex:0 0 auto}
+      .subhead .btn{font-size:12px;padding:6px 8px}
+      #selectedListLabel{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .autoViews{margin-top:6px}
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
@@ -154,9 +156,13 @@
 
       <div class="subhead">
         <b>単語帳リスト</b>
-        <button class="btn small" id="addListBtn">＋単語帳</button>
+        <div class="row" style="gap:5px">
+          <button class="btn small" id="renameListBtn">名前変更</button>
+          <button class="btn small primary" id="addListBtn">＋単語帳</button>
+        </div>
       </div>
       <div class="listScroller" id="listScroller"></div>
+      <div class="muted" id="selectedListLabel" style="margin-top:5px"></div>
 
       <div class="autoViews">
         <button class="autoBtn" id="fileStar1Btn"><b>★1 統合</b><div class="listMeta" id="star1Count"></div></button>
@@ -322,6 +328,8 @@ function render(){
   });
   const f=currentFile();
   listScroller.innerHTML='';
+  const selected=currentList();
+  selectedListLabel.textContent=selected ? `選択中：${selected.name}` : '';
   f.lists.forEach(l=>{
     const wrap=document.createElement('div');
     wrap.className='listWrap '+(viewMode==='list'&&l.id===activeListId?'active':'');
@@ -423,6 +431,11 @@ deleteFileBtn.onclick=()=>{
   state.files=state.files.filter(f=>f.id!==activeFileId);activeFileId=state.files[0].id;activeListId=state.files[0].lists[0].id;viewMode='list';save()
 };
 addListBtn.onclick=()=>openName('単語帳リストを作成','',name=>{const l=makeList(name);currentFile().lists.push(l);activeListId=l.id;viewMode='list';save()});
+renameListBtn.onclick=()=>{
+  const l=currentList();
+  if(!l){alert('名前を変更する単語帳を選んでください。');return}
+  renameList(l.id)
+};
 function renameList(id){
   const l=currentFile().lists.find(x=>x.id===id);if(!l)return;
   openName('単語帳名を変更',l.name,name=>{l.name=name;save()})

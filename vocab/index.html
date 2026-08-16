@@ -118,7 +118,7 @@
       .brand{font-size:22px}
       .top .muted{display:none}
       .top>.row{margin-left:auto;flex-wrap:nowrap}
-      .top .btn{padding:6px 8px;font-size:12px}
+      .top .btn{padding:6px 7px;font-size:11px}
       .grid{display:block;margin-top:7px}
       aside.card{padding:9px;margin-bottom:9px}
       main.card{padding:9px}
@@ -165,7 +165,7 @@
 <div class="app">
   <div class="top">
     <div><div class="brand">VocabStar</div><div class="muted">英単語特化・オフライン単語帳</div></div>
-    <div class="row"><button class="btn" id="exportBtn">バックアップ</button><button class="btn" id="restoreBtn">復元</button></div>
+    <div class="row"><button class="btn" id="recoveryBtn">旧データ確認</button><button class="btn" id="exportBtn">バックアップ</button><button class="btn" id="restoreBtn">復元</button></div>
   </div>
 
   <div class="topSearch">
@@ -325,6 +325,18 @@
     <div class="choices" id="choices"></div>
     <div id="feedback" style="margin-top:12px;font-weight:700;text-align:center"></div>
     <div class="row" style="justify-content:center"><button class="btn primary hidden" id="nextQBtn" style="margin-top:12px">次の問題</button></div>
+  </div>
+</div></dialog>
+
+<dialog id="recoveryDialog"><div class="modal">
+  <h2>旧データの確認</h2>
+  <div id="recoveryInfo" style="line-height:1.8"></div>
+  <div class="help" style="display:block;margin-top:10px">
+    復旧しても現在の単語帳は上書きせず、「復旧データ」という別ファイルとして追加します。
+  </div>
+  <div class="row" style="justify-content:flex-end;margin-top:12px">
+    <button class="btn" data-close="recoveryDialog">閉じる</button>
+    <button class="btn primary" id="recoverLegacyBtn">旧データを復旧</button>
   </div>
 </div></dialog>
 
@@ -721,6 +733,51 @@ nextQBtn.onclick=()=>{
   testState.index++;testState.answered=false;
   if(testState.index>=testState.questions.length){sentence.textContent=`終了：${testState.score} / ${testState.questions.length} 正解`;choices.innerHTML='';feedback.textContent='';nextQBtn.classList.add('hidden');testProgress.textContent='';return}
   showQ()
+};
+
+/* recovery */
+function countWordsInCurrent(x){
+  if(!x||!Array.isArray(x.files))return 0;
+  return x.files.reduce((sum,f)=>sum+(Array.isArray(f.lists)?f.lists.reduce((s,l)=>s+(Array.isArray(l.words)?l.words.length:0),0):0),0)
+}
+function countWordsInLegacy(x){
+  if(!x||!Array.isArray(x.decks))return 0;
+  return x.decks.reduce((sum,d)=>sum+(Array.isArray(d.words)?d.words.length:0),0)
+}
+function getLegacyData(){
+  try{
+    const raw=localStorage.getItem(LEGACY_KEY);
+    return raw?JSON.parse(raw):null
+  }catch(e){return null}
+}
+function showRecoveryInfo(){
+  const legacy=getLegacyData();
+  const currentCount=countWordsInCurrent(state);
+  const legacyCount=countWordsInLegacy(legacy);
+  recoveryInfo.innerHTML=`<div><b>現在のデータ：</b>${currentCount}語</div>
+  <div><b>旧版データ：</b>${legacyCount}語</div>
+  <div style="margin-top:8px;color:${legacyCount>0?'#166534':'#6b7280'}">${legacyCount>0?'旧版データが見つかりました。':'旧版データは見つかりませんでした。'}</div>`;
+  recoverLegacyBtn.disabled=legacyCount===0
+}
+recoveryBtn.onclick=()=>{showRecoveryInfo();recoveryDialog.showModal()};
+recoverLegacyBtn.onclick=()=>{
+  const legacy=getLegacyData();
+  const legacyCount=countWordsInLegacy(legacy);
+  if(!legacy||!legacyCount){alert('復旧できる旧データがありません。');return}
+  try{localStorage.setItem('vocabstar_recovery_backup_'+Date.now(),JSON.stringify(state))}catch(e){}
+  const recoveredLists=(legacy.decks||[]).map(d=>({
+    id:uid(),
+    name:(d.name||'単語帳')+'（復旧）',
+    words:(d.words||[]).map(w=>({...w,id:uid(),star:Number(w.star)||0}))
+  }));
+  const recoveredFile={id:uid(),name:'復旧データ',lists:recoveredLists.length?recoveredLists:[makeList('復旧単語帳')]};
+  state.files.push(recoveredFile);
+  activeFileId=recoveredFile.id;
+  activeListId=recoveredFile.lists[0].id;
+  viewMode='list';
+  recoveryDialog.close();
+  save();
+  alert(`${legacyCount}語の旧データを「復旧データ」として追加しました。`)
 };
 
 /* backup */

@@ -44,8 +44,9 @@
     .listMeta{font-size:11px;color:var(--sub);margin-top:2px}
     .autoViews{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
     .deckFilterBox{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+    .mainDeckFilter{margin-top:12px;margin-bottom:8px}
     .deckFilterTitle{font-size:12px}
-    #selectedListLabel{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #selectedListLabel{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .listFilters{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
     .listFilterBtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 4px;font-size:11px;cursor:pointer}
     .listFilterBtn.active{border-color:var(--accent);background:var(--accentSoft);color:#1d4ed8;font-weight:700}
@@ -130,6 +131,9 @@
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
       .stickyActions .btn{width:100%;padding:9px 4px;font-size:12px}
+      .mainDeckFilter{margin-top:10px;margin-bottom:8px;padding-top:8px}
+      .mainDeckFilter .listFilters{gap:6px}
+      .mainDeckFilter .listFilterBtn{padding:8px 3px;font-size:12px}
       #searchInput{font-size:16px}
       .tableWrap{overflow:visible}
       table{display:block;min-width:0;width:100%}
@@ -186,18 +190,7 @@
       </div>
       <div class="listScroller" id="listScroller"></div>
 
-      <div class="deckFilterBox">
-        <div class="row" style="justify-content:space-between">
-          <b class="deckFilterTitle">選択中の単語帳</b>
-          <span class="muted" id="selectedListLabel"></span>
-        </div>
-        <div class="listFilters" id="listFilters">
-          <button class="listFilterBtn active" data-mode="list">全て</button>
-          <button class="listFilterBtn" data-mode="listStarred">★付き</button>
-          <button class="listFilterBtn" data-mode="listStar1">★1</button>
-          <button class="listFilterBtn" data-mode="listStar2">★★</button>
-        </div>
-      </div>
+
     </aside>
 
     <main class="card">
@@ -213,6 +206,19 @@
           <button class="btn" id="importBtn">インポート</button>
           <button class="btn" id="flashBtn">カード</button>
           <button class="btn primary" id="testBtn">4択</button>
+        </div>
+      </div>
+
+      <div class="deckFilterBox mainDeckFilter">
+        <div class="row" style="justify-content:space-between">
+          <b class="deckFilterTitle">表示</b>
+          <span class="muted" id="selectedListLabel"></span>
+        </div>
+        <div class="listFilters" id="listFilters">
+          <button class="listFilterBtn active" data-mode="list">全て</button>
+          <button class="listFilterBtn" data-mode="listStarred">★付き</button>
+          <button class="listFilterBtn" data-mode="listStar1">★1</button>
+          <button class="listFilterBtn" data-mode="listStar2">★★</button>
         </div>
       </div>
 
@@ -381,7 +387,7 @@ function render(){
   const f=currentFile();
   listScroller.innerHTML='';
   const selected=currentList();
-  selectedListLabel.textContent=selected ? `選択中：${selected.name}` : '';
+  selectedListLabel.textContent=selected ? selected.name : '';
   f.lists.forEach(l=>{
     const wrap=document.createElement('div');
     wrap.className='listWrap '+(viewMode.startsWith('list')&&l.id===activeListId?'active':'');

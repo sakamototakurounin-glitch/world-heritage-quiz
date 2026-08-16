@@ -1,4 +1,4 @@
-const CACHE='vocabstar-cache-v8-star-export';
+const CACHE='vocabstar-cache-v9-flash-learning';
 const ASSETS=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([

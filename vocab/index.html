@@ -41,6 +41,9 @@
     .listTitle{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .listMeta{font-size:11px;color:var(--sub);margin-top:2px}
     .autoViews{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+    .listFilters{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+    .listFilterBtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 4px;font-size:11px;cursor:pointer}
+    .listFilterBtn.active{border-color:var(--accent);background:var(--accentSoft);color:#1d4ed8;font-weight:700}
     .autoBtn{border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:8px 7px;text-align:left;cursor:pointer}
     .autoBtn.active{box-shadow:0 0 0 1px var(--star) inset}
     .autoBtn b{color:#a16207}
@@ -82,6 +85,17 @@
     .flashProgress{text-align:center;color:var(--sub);font-size:12px}
     .flashStarbar{display:flex;justify-content:center;gap:5px;margin-top:8px}
     .flashStarbar button{font-size:27px;border:0;background:transparent;cursor:pointer}
+    .flashScopeTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}
+    .flashScopeBtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 3px;font-size:11px;cursor:pointer}
+    .flashScopeBtn.active{border-color:var(--accent);background:var(--accentSoft);color:#1d4ed8;font-weight:700}
+    .flashJudge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
+    .judgeBtn{border:1px solid var(--line);border-radius:12px;padding:12px 8px;background:#fff;font-weight:750;cursor:pointer}
+    .judgeUnknown{border-color:#fecaca;background:#fff7f7;color:#b91c1c}
+    .judgeKnown{border-color:#bbf7d0;background:#f0fdf4;color:#15803d}
+    .flashStats{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:8px}
+    .flashSummary{border:1px solid var(--line);border-radius:16px;padding:20px 14px;text-align:center;margin-top:12px;background:#fafafa}
+    .flashSummary h3{margin:0 0 8px;font-size:20px}
+    .summaryActions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
     .autoSpeakRow{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
     .switchRow{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--sub)}
     .sentence{font-size:22px;line-height:1.5;margin:18px 0;text-align:center}
@@ -165,6 +179,12 @@
       </div>
       <div class="listScroller" id="listScroller"></div>
       <div class="muted" id="selectedListLabel" style="margin-top:5px"></div>
+      <div class="listFilters" id="listFilters">
+        <button class="listFilterBtn active" data-mode="list">全て</button>
+        <button class="listFilterBtn" data-mode="listStarred">★付き</button>
+        <button class="listFilterBtn" data-mode="listStar1">★1</button>
+        <button class="listFilterBtn" data-mode="listStar2">★★</button>
+      </div>
 
       <div class="autoViews">
         <button class="autoBtn" id="fileStar1Btn"><b>★1 統合</b><div class="listMeta" id="star1Count"></div></button>
@@ -227,8 +247,19 @@
     <div class="muted" id="flashScopeName"></div>
     <label class="switchRow"><input type="checkbox" id="autoSpeak">自動発音</label>
   </div>
+  <div class="flashScopeTabs" id="flashScopeTabs">
+    <button class="flashScopeBtn active" data-scope="all">全て</button>
+    <button class="flashScopeBtn" data-scope="starred">★付き</button>
+    <button class="flashScopeBtn" data-scope="star1">★1</button>
+    <button class="flashScopeBtn" data-scope="star2">★★</button>
+  </div>
   <div class="empty hidden" id="flashEmpty">対象の単語がありません。</div>
   <div id="flashArea">
+    <div class="flashStats">
+      <span class="pill" id="flashKnownCount">わかった 0</span>
+      <span class="pill" id="flashUnknownCount">わからない 0</span>
+      <span class="pill" id="flashRoundCount">1周目</span>
+    </div>
     <div class="flashCard" id="flashCard">
       <div class="flashInner">
         <div class="flashFace">
@@ -244,12 +275,20 @@
       </div>
     </div>
     <div class="flashStarbar"><button id="flashStar1">★</button><button id="flashStar2">★</button></div>
-    <div class="flashControls">
-      <button class="btn" id="prevFlashBtn">← 前</button>
-      <div class="flashProgress" id="flashProgress"></div>
-      <button class="btn primary" id="nextFlashBtn">次 →</button>
+    <div class="flashProgress" id="flashProgress" style="margin-top:5px"></div>
+    <div class="flashJudge">
+      <button class="judgeBtn judgeUnknown" id="unknownFlashBtn">わからない</button>
+      <button class="judgeBtn judgeKnown" id="knownFlashBtn">わかった</button>
     </div>
     <div class="row" style="justify-content:center;margin-top:8px"><button class="btn small" id="shuffleFlashBtn">シャッフル</button></div>
+  </div>
+  <div class="flashSummary hidden" id="flashSummary">
+    <h3 id="flashSummaryTitle">1周終了</h3>
+    <div id="flashSummaryText"></div>
+    <div class="summaryActions">
+      <button class="btn primary" id="retryUnknownBtn">わからない単語でもう一周</button>
+      <button class="btn" id="restartFlashBtn">最初から</button>
+    </div>
   </div>
 </div></dialog>
 
@@ -282,7 +321,7 @@ const LEGACY_KEY='vocabstar_v1';
 let state=loadState();
 let activeFileId=state.files[0].id;
 let activeListId=state.files[0].lists[0].id;
-let viewMode='list'; // list | star1 | star2
+let viewMode='list'; // list | listStarred | listStar1 | listStar2 | star1 | star2
 let nameAction=null;
 let flashState={items:[],index:0};
 let testState=null;
@@ -310,10 +349,17 @@ function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 function currentFile(){return state.files.find(f=>f.id===activeFileId)}
 function currentList(){return currentFile()?.lists.find(l=>l.id===activeListId)}
 function fileWords(file=currentFile()){return file?file.lists.flatMap(l=>l.words.map(w=>({...w,listId:l.id,listName:l.name}))):[]}
+function currentListWords(){
+  return (currentList()?.words||[]).map(w=>({...w,listId:activeListId,listName:currentList()?.name||''}))
+}
 function wordsForView(){
   if(viewMode==='star1')return fileWords().filter(w=>w.star===1);
   if(viewMode==='star2')return fileWords().filter(w=>w.star===2);
-  return (currentList()?.words||[]).map(w=>({...w,listId:activeListId,listName:currentList()?.name||''}))
+  const listWords=currentListWords();
+  if(viewMode==='listStarred')return listWords.filter(w=>w.star>0);
+  if(viewMode==='listStar1')return listWords.filter(w=>w.star===1);
+  if(viewMode==='listStar2')return listWords.filter(w=>w.star===2);
+  return listWords
 }
 function filteredWords(){
   let a=wordsForView();
@@ -335,7 +381,7 @@ function render(){
   selectedListLabel.textContent=selected ? `選択中：${selected.name}` : '';
   f.lists.forEach(l=>{
     const wrap=document.createElement('div');
-    wrap.className='listWrap '+(viewMode==='list'&&l.id===activeListId?'active':'');
+    wrap.className='listWrap '+(viewMode.startsWith('list')&&l.id===activeListId?'active':'');
     wrap.innerHTML=`<button class="listBtn"><div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div></button><div class="listActions"><button class="iconbtn listRename" title="名前変更">✎</button><button class="iconbtn listDelete" title="削除">×</button></div>`;
     wrap.querySelector('.listBtn').onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
     wrap.querySelector('.listRename').onclick=()=>renameList(l.id);
@@ -347,15 +393,25 @@ function render(){
   star1Count.textContent=`${c1}語`;star2Count.textContent=`${c2}語`;
   fileStar1Btn.classList.toggle('active',viewMode==='star1');
   fileStar2Btn.classList.toggle('active',viewMode==='star2');
+  document.querySelectorAll('.listFilterBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===viewMode));
+  listFilters.classList.toggle('hidden',viewMode==='star1'||viewMode==='star2');
 
   let title='',meta='';
-  if(viewMode==='list'){title=currentList()?.name||'単語帳';meta=`${f.name} / ${currentList()?.words.length||0}語`;modeBadge.classList.add('hidden')}
-  else{title=f.name;meta=`ファイル内の全単語帳から自動統合`;modeBadge.textContent=viewMode==='star1'?'★1 統合':'★★ 統合';modeBadge.classList.remove('hidden')}
+  if(viewMode.startsWith('list')){
+    title=currentList()?.name||'単語帳';
+    const label=viewMode==='list'?'全て':viewMode==='listStarred'?'★付き':viewMode==='listStar1'?'★1':'★★';
+    meta=`${f.name} / ${label} ${wordsForView().length}語`;
+    if(viewMode==='list'){modeBadge.classList.add('hidden')}
+    else{modeBadge.textContent=label;modeBadge.classList.remove('hidden')}
+  }else{
+    title=f.name;meta=`ファイル内の全単語帳から自動統合`;
+    modeBadge.textContent=viewMode==='star1'?'★1 統合':'★★ 統合';modeBadge.classList.remove('hidden')
+  }
   deckTitle.textContent=title;deckMeta.textContent=meta;
 
   const raw=wordsForView();
   stats.innerHTML=`<span class="pill">表示 ${raw.length}</span><span class="pill">ファイル全体 ${fw.length}</span><span class="pill">★1 ${c1}</span><span class="pill">★★ ${c2}</span>`;
-  importBtn.disabled=viewMode!=='list';
+  importBtn.disabled=!viewMode.startsWith('list');
   const isStarMerged=viewMode==='star1'||viewMode==='star2';
   starExportBtn.classList.toggle('hidden',!isStarMerged);
   document.querySelector('.stickyActions')?.classList.toggle('exporting',isStarMerged);
@@ -363,7 +419,7 @@ function render(){
   const words=filteredWords();wordBody.innerHTML='';
   words.forEach(w=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><div class="wordHead"><button class="audioBtn" type="button">🔊</button><div><div class="word">${esc(w.en)}</div>${viewMode!=='list'?`<div class="listMeta">${esc(w.listName)}</div>`:''}</div></div></td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
+    tr.innerHTML=`<td><div class="wordHead"><button class="audioBtn" type="button">🔊</button><div><div class="word">${esc(w.en)}</div>${(viewMode==='star1'||viewMode==='star2')?`<div class="listMeta">${esc(w.listName)}</div>`:''}</div></div></td><td class="jp">${esc(w.jp)}</td><td class="example">${esc(w.example||'')}</td><td class="stars"></td><td><button class="btn small danger">削除</button></td>`;
     tr.children[0].querySelector('.audioBtn').onclick=e=>{e.stopPropagation();speak(w.en)};
     const stars=tr.children[3];
     [1,2].forEach(n=>{
@@ -455,6 +511,11 @@ function deleteList(id){
   }
 }
 nameSaveBtn.onclick=()=>{const n=nameInput.value.trim();if(!n||!nameAction)return;nameAction(n);nameDialog.close();nameAction=null};
+document.querySelectorAll('.listFilterBtn').forEach(b=>b.onclick=()=>{
+  viewMode=b.dataset.mode;
+  searchInput.value='';
+  render()
+});
 fileStar1Btn.onclick=()=>{viewMode='star1';searchInput.value='';render()};
 fileStar2Btn.onclick=()=>{viewMode='star2';searchInput.value='';render()};
 
@@ -482,7 +543,7 @@ function exportStarMerged(){
 }
 
 /* import */
-importBtn.onclick=()=>{if(viewMode!=='list')return;importText.value='';importDialog.showModal()};
+importBtn.onclick=()=>{if(!viewMode.startsWith('list'))return;importText.value='';importDialog.showModal()};
 starExportBtn.onclick=exportStarMerged;
 doImportBtn.onclick=()=>{
   const l=currentList(),rows=parseImport(importText.value),seen=new Set(l.words.map(w=>w.en.toLowerCase()));let added=0;
@@ -492,31 +553,98 @@ doImportBtn.onclick=()=>{
 searchInput.oninput=render;
 
 /* flashcards */
-flashBtn.onclick=()=>{
-  flashState.items=shuffle(wordsForView());flashState.index=0;
-  flashScopeName.textContent=`${currentFile().name} / ${viewMode==='list'?currentList().name:(viewMode==='star1'?'★1 統合':'★★ 統合')}`;
-  flashDialog.showModal();showFlash()
-};
+function flashBaseWords(){
+  if(viewMode==='star1'||viewMode==='star2')return fileWords();
+  return currentListWords()
+}
+function flashWordsForScope(scope){
+  const base=flashBaseWords();
+  if(scope==='starred')return base.filter(w=>w.star>0);
+  if(scope==='star1')return base.filter(w=>w.star===1);
+  if(scope==='star2')return base.filter(w=>w.star===2);
+  return base
+}
+function defaultFlashScope(){
+  if(viewMode==='listStarred')return 'starred';
+  if(viewMode==='listStar1'||viewMode==='star1')return 'star1';
+  if(viewMode==='listStar2'||viewMode==='star2')return 'star2';
+  return 'all'
+}
+function flashContextLabel(){
+  return `${currentFile().name} / ${(viewMode==='star1'||viewMode==='star2')?'ファイル全体':currentList().name}`
+}
+function startFlashSession(scope=defaultFlashScope()){
+  flashState={scope,original:shuffle(flashWordsForScope(scope)),items:[],index:0,known:[],unknown:[],round:1};
+  flashState.items=[...flashState.original];
+  document.querySelectorAll('.flashScopeBtn').forEach(b=>b.classList.toggle('active',b.dataset.scope===scope));
+  flashScopeName.textContent=flashContextLabel();
+  flashSummary.classList.add('hidden');
+  showFlash()
+}
+flashBtn.onclick=()=>{flashDialog.showModal();startFlashSession()};
+document.querySelectorAll('.flashScopeBtn').forEach(b=>b.onclick=()=>startFlashSession(b.dataset.scope));
 function showFlash(){
-  const ok=flashState.items.length>0;
-  flashEmpty.classList.toggle('hidden',ok);flashArea.classList.toggle('hidden',!ok);if(!ok)return;
-  const w=flashState.items[flashState.index];flashCard.classList.remove('flipped');
+  const ok=flashState.items?.length>0;
+  flashEmpty.classList.toggle('hidden',ok);
+  flashArea.classList.toggle('hidden',!ok);
+  if(!ok)return;
+  if(flashState.index>=flashState.items.length){finishFlashRound();return}
+  const w=flashState.items[flashState.index];
+  flashCard.classList.remove('flipped');
   flashWord.textContent=w.en;flashJp.textContent=w.jp;flashEx.textContent=w.example||'';
   flashProgress.textContent=`${flashState.index+1} / ${flashState.items.length}`;
-  flashStar1.className=w.star>=1?'star-on':'star-off';flashStar2.className=w.star>=2?'star-on':'star-off';
+  flashKnownCount.textContent=`わかった ${flashState.known.length}`;
+  flashUnknownCount.textContent=`わからない ${flashState.unknown.length}`;
+  flashRoundCount.textContent=`${flashState.round}周目`;
+  flashStar1.className=w.star>=1?'star-on':'star-off';
+  flashStar2.className=w.star>=2?'star-on':'star-off';
   if(autoSpeak.checked)setTimeout(()=>speak(w.en),100)
 }
+function judgeFlash(known){
+  if(!flashState.items?.length||flashState.index>=flashState.items.length)return;
+  const w=flashState.items[flashState.index];
+  (known?flashState.known:flashState.unknown).push(w);
+  flashState.index++;
+  if(flashState.index>=flashState.items.length)finishFlashRound();else showFlash()
+}
+function finishFlashRound(){
+  flashArea.classList.add('hidden');flashEmpty.classList.add('hidden');flashSummary.classList.remove('hidden');
+  flashSummaryTitle.textContent=`${flashState.round}周目終了`;
+  flashSummaryText.innerHTML=`<div><b>わかった：${flashState.known.length}語</b></div><div style="margin-top:5px">わからない：${flashState.unknown.length}語</div>`;
+  retryUnknownBtn.classList.toggle('hidden',flashState.unknown.length===0);
+  if(flashState.unknown.length)retryUnknownBtn.textContent=`わからない ${flashState.unknown.length}語でもう一周`
+}
+function retryUnknown(){
+  if(!flashState.unknown.length)return;
+  flashState.items=shuffle(flashState.unknown);
+  flashState.index=0;flashState.known=[];flashState.unknown=[];flashState.round++;
+  flashSummary.classList.add('hidden');flashArea.classList.remove('hidden');showFlash()
+}
 flashCard.onclick=()=>flashCard.classList.toggle('flipped');
-flashAudioBtn.onclick=e=>{e.stopPropagation();const w=flashState.items[flashState.index];if(w)speak(w.en)};
-prevFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index-1+flashState.items.length)%flashState.items.length;showFlash()};
-nextFlashBtn.onclick=()=>{if(!flashState.items.length)return;flashState.index=(flashState.index+1)%flashState.items.length;showFlash()};
-shuffleFlashBtn.onclick=()=>{flashState.items=shuffle(flashState.items);flashState.index=0;showFlash()};
-flashStar1.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,w.listId,1)};
-flashStar2.onclick=()=>{const w=flashState.items[flashState.index];if(w)setStar(w.id,w.listId,2)};
+flashAudioBtn.onclick=e=>{e.stopPropagation();const w=flashState.items?.[flashState.index];if(w)speak(w.en)};
+knownFlashBtn.onclick=()=>judgeFlash(true);
+unknownFlashBtn.onclick=()=>judgeFlash(false);
+retryUnknownBtn.onclick=retryUnknown;
+restartFlashBtn.onclick=()=>startFlashSession(flashState.scope||defaultFlashScope());
+shuffleFlashBtn.onclick=()=>{
+  if(!flashState.items?.length)return;
+  const remaining=flashState.items.slice(flashState.index);
+  flashState.items=[...flashState.items.slice(0,flashState.index),...shuffle(remaining)];
+  showFlash()
+};
+flashStar1.onclick=()=>{const w=flashState.items?.[flashState.index];if(w)setStar(w.id,w.listId,1)};
+flashStar2.onclick=()=>{const w=flashState.items?.[flashState.index];if(w)setStar(w.id,w.listId,2)};
 function refreshFlash(id,listId){
-  if(!flashState.items.length)return;
-  const cur=flashState.items[flashState.index],fresh=findStoredWord(id,listId);
-  if(cur&&fresh&&cur.id===id&&cur.listId===listId){cur.star=fresh.star;flashStar1.className=fresh.star>=1?'star-on':'star-off';flashStar2.className=fresh.star>=2?'star-on':'star-off'}
+  if(!flashState.items?.length)return;
+  const fresh=findStoredWord(id,listId);
+  [flashState.items,flashState.original||[],flashState.known||[],flashState.unknown||[]].forEach(arr=>{
+    const w=arr.find(x=>x.id===id&&x.listId===listId);if(w&&fresh)w.star=fresh.star
+  });
+  const cur=flashState.items[flashState.index];
+  if(cur&&fresh&&cur.id===id&&cur.listId===listId){
+    flashStar1.className=fresh.star>=1?'star-on':'star-off';
+    flashStar2.className=fresh.star>=2?'star-on':'star-off'
+  }
 }
 
 /* test */
@@ -530,7 +658,7 @@ startTestBtn.onclick=()=>{
 function showQ(){
   const q=testState.questions[testState.index];testProgress.textContent=`${testState.index+1} / ${testState.questions.length}`;
   sentence.textContent=q.sentence;feedback.textContent='';nextQBtn.classList.add('hidden');choices.innerHTML='';
-  q.choices.forEach((w,i)=>{const b=document.createElement('button');b.className='choice';b.innerHTML=`<b>${String.fromCharCode(65+i)}. ${esc(w.en)}</b><div class="muted">${esc(w.jp)}</div>`;b.onclick=()=>answerQ(b,w,q);choices.appendChild(b)})
+  q.choices.forEach((w,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=`${String.fromCharCode(65+i)}. ${w.en}`;b.onclick=()=>answerQ(b,w,q);choices.appendChild(b)})
 }
 function answerQ(btn,w,q){
   if(testState.answered)return;testState.answered=true;

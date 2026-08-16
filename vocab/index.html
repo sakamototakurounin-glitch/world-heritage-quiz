@@ -17,7 +17,9 @@
     .top{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
     .brand{font-size:24px;font-weight:850}
     .muted{color:var(--sub);font-size:12px}
-    .grid{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;margin-top:12px}
+    .topSearch{margin-top:10px}
+    .topSearch .input{width:100%;font-size:16px}
+    .grid{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;margin-top:10px}
     .card{min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;box-shadow:0 2px 10px rgba(0,0,0,.035)}
     .row{display:flex;gap:7px;align-items:center;flex-wrap:wrap;min-width:0}
     .grow{flex:1;min-width:0}
@@ -41,6 +43,9 @@
     .listTitle{font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .listMeta{font-size:11px;color:var(--sub);margin-top:2px}
     .autoViews{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:9px}
+    .deckFilterBox{margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+    .deckFilterTitle{font-size:12px}
+    #selectedListLabel{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .listFilters{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
     .listFilterBtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 4px;font-size:11px;cursor:pointer}
     .listFilterBtn.active{border-color:var(--accent);background:var(--accentSoft);color:#1d4ed8;font-weight:700}
@@ -124,9 +129,7 @@
       .autoViews{margin-top:6px}
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
-      .stickyActions.exporting{grid-template-columns:1fr 1fr 1fr 1fr}
       .stickyActions .btn{width:100%;padding:9px 4px;font-size:12px}
-      .stickyActions.exporting .btn{padding-left:3px;padding-right:3px;font-size:11px}
       #searchInput{font-size:16px}
       .tableWrap{overflow:visible}
       table{display:block;min-width:0;width:100%}
@@ -158,6 +161,10 @@
     <div class="row"><button class="btn" id="exportBtn">バックアップ</button><button class="btn" id="restoreBtn">復元</button></div>
   </div>
 
+  <div class="topSearch">
+    <input class="input" id="searchInput" placeholder="英単語 / 日本語で検索">
+  </div>
+
   <div class="grid">
     <aside class="card">
       <div class="sectionTitle">ファイル</div>
@@ -178,19 +185,19 @@
         </div>
       </div>
       <div class="listScroller" id="listScroller"></div>
-      <div class="muted" id="selectedListLabel" style="margin-top:5px"></div>
-      <div class="listFilters" id="listFilters">
-        <button class="listFilterBtn active" data-mode="list">全て</button>
-        <button class="listFilterBtn" data-mode="listStarred">★付き</button>
-        <button class="listFilterBtn" data-mode="listStar1">★1</button>
-        <button class="listFilterBtn" data-mode="listStar2">★★</button>
-      </div>
 
-      <div class="autoViews">
-        <button class="autoBtn" id="fileStar1Btn"><b>★1 統合</b><div class="listMeta" id="star1Count"></div></button>
-        <button class="autoBtn" id="fileStar2Btn"><b>★★ 統合</b><div class="listMeta" id="star2Count"></div></button>
+      <div class="deckFilterBox">
+        <div class="row" style="justify-content:space-between">
+          <b class="deckFilterTitle">選択中の単語帳</b>
+          <span class="muted" id="selectedListLabel"></span>
+        </div>
+        <div class="listFilters" id="listFilters">
+          <button class="listFilterBtn active" data-mode="list">全て</button>
+          <button class="listFilterBtn" data-mode="listStarred">★付き</button>
+          <button class="listFilterBtn" data-mode="listStar1">★1</button>
+          <button class="listFilterBtn" data-mode="listStar2">★★</button>
+        </div>
       </div>
-      <div class="help">★1/★★は、現在のファイル内にあるすべての単語帳から自動でまとめられます。</div>
     </aside>
 
     <main class="card">
@@ -204,13 +211,11 @@
         </div>
         <div class="stickyActions">
           <button class="btn" id="importBtn">インポート</button>
-          <button class="btn hidden" id="starExportBtn">エクスポート</button>
           <button class="btn" id="flashBtn">カード</button>
           <button class="btn primary" id="testBtn">4択</button>
         </div>
       </div>
-      <div class="toolbar"><input class="input grow" id="searchInput" placeholder="英単語 / 日本語で検索"></div>
-      <div class="stats" id="stats"></div>
+
       <div class="tableWrap">
         <table>
           <thead><tr><th>英単語</th><th>日本語</th><th>例文</th><th>重要度</th><th></th></tr></thead>
@@ -321,7 +326,7 @@ const LEGACY_KEY='vocabstar_v1';
 let state=loadState();
 let activeFileId=state.files[0].id;
 let activeListId=state.files[0].lists[0].id;
-let viewMode='list'; // list | listStarred | listStar1 | listStar2 | star1 | star2
+let viewMode='list'; // list | listStarred | listStar1 | listStar2
 let nameAction=null;
 let flashState={items:[],index:0};
 let testState=null;
@@ -353,8 +358,6 @@ function currentListWords(){
   return (currentList()?.words||[]).map(w=>({...w,listId:activeListId,listName:currentList()?.name||''}))
 }
 function wordsForView(){
-  if(viewMode==='star1')return fileWords().filter(w=>w.star===1);
-  if(viewMode==='star2')return fileWords().filter(w=>w.star===2);
   const listWords=currentListWords();
   if(viewMode==='listStarred')return listWords.filter(w=>w.star>0);
   if(viewMode==='listStar1')return listWords.filter(w=>w.star===1);
@@ -390,31 +393,22 @@ function render(){
   });
   const fw=fileWords(f);
   const c1=fw.filter(w=>w.star===1).length,c2=fw.filter(w=>w.star===2).length;
-  star1Count.textContent=`${c1}語`;star2Count.textContent=`${c2}語`;
-  fileStar1Btn.classList.toggle('active',viewMode==='star1');
-  fileStar2Btn.classList.toggle('active',viewMode==='star2');
-  document.querySelectorAll('.listFilterBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===viewMode));
-  listFilters.classList.toggle('hidden',viewMode==='star1'||viewMode==='star2');
 
-  let title='',meta='';
-  if(viewMode.startsWith('list')){
-    title=currentList()?.name||'単語帳';
-    const label=viewMode==='list'?'全て':viewMode==='listStarred'?'★付き':viewMode==='listStar1'?'★1':'★★';
-    meta=`${f.name} / ${label} ${wordsForView().length}語`;
-    if(viewMode==='list'){modeBadge.classList.add('hidden')}
-    else{modeBadge.textContent=label;modeBadge.classList.remove('hidden')}
-  }else{
-    title=f.name;meta=`ファイル内の全単語帳から自動統合`;
-    modeBadge.textContent=viewMode==='star1'?'★1 統合':'★★ 統合';modeBadge.classList.remove('hidden')
-  }
+
+
+  document.querySelectorAll('.listFilterBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===viewMode));
+
+
+  let title=currentList()?.name||'単語帳';
+  const label=viewMode==='list'?'全て':viewMode==='listStarred'?'★付き':viewMode==='listStar1'?'★1':'★★';
+  const meta=`${f.name} / ${label} ${wordsForView().length}語`;
+  if(viewMode==='list'){modeBadge.classList.add('hidden')}
+  else{modeBadge.textContent=label;modeBadge.classList.remove('hidden')}
   deckTitle.textContent=title;deckMeta.textContent=meta;
 
   const raw=wordsForView();
-  stats.innerHTML=`<span class="pill">表示 ${raw.length}</span><span class="pill">ファイル全体 ${fw.length}</span><span class="pill">★1 ${c1}</span><span class="pill">★★ ${c2}</span>`;
+
   importBtn.disabled=!viewMode.startsWith('list');
-  const isStarMerged=viewMode==='star1'||viewMode==='star2';
-  starExportBtn.classList.toggle('hidden',!isStarMerged);
-  document.querySelector('.stickyActions')?.classList.toggle('exporting',isStarMerged);
 
   const words=filteredWords();wordBody.innerHTML='';
   words.forEach(w=>{
@@ -516,35 +510,10 @@ document.querySelectorAll('.listFilterBtn').forEach(b=>b.onclick=()=>{
   searchInput.value='';
   render()
 });
-fileStar1Btn.onclick=()=>{viewMode='star1';searchInput.value='';render()};
-fileStar2Btn.onclick=()=>{viewMode='star2';searchInput.value='';render()};
 
-/* star merged export */
-function exportStarMerged(){
-  if(viewMode!=='star1'&&viewMode!=='star2')return;
-  const words=wordsForView();
-  if(!words.length){alert('エクスポートする単語がありません。');return}
-
-  const clean=s=>String(s??'').replace(/\t/g,' ').replace(/\r?\n/g,' ');
-  const text=words.map(w=>[clean(w.en),clean(w.jp),clean(w.example||'')].join('\t')).join('\n');
-  const level=viewMode==='star1'?'star1':'star2';
-  const safeFileName=(currentFile()?.name||'VocabStar').replace(/[\\/:*?"<>|]/g,'_');
-  const filename=`${safeFileName}_${level}_merged.tsv`;
-
-  const blob=new Blob([text],{type:'text/tab-separated-values;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download=filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
 
 /* import */
 importBtn.onclick=()=>{if(!viewMode.startsWith('list'))return;importText.value='';importDialog.showModal()};
-starExportBtn.onclick=exportStarMerged;
 doImportBtn.onclick=()=>{
   const l=currentList(),rows=parseImport(importText.value),seen=new Set(l.words.map(w=>w.en.toLowerCase()));let added=0;
   rows.forEach(r=>{if(!seen.has(r.en.toLowerCase())){l.words.push({id:uid(),...r,star:0});seen.add(r.en.toLowerCase());added++}});
@@ -554,7 +523,6 @@ searchInput.oninput=render;
 
 /* flashcards */
 function flashBaseWords(){
-  if(viewMode==='star1'||viewMode==='star2')return fileWords();
   return currentListWords()
 }
 function flashWordsForScope(scope){
@@ -566,12 +534,12 @@ function flashWordsForScope(scope){
 }
 function defaultFlashScope(){
   if(viewMode==='listStarred')return 'starred';
-  if(viewMode==='listStar1'||viewMode==='star1')return 'star1';
-  if(viewMode==='listStar2'||viewMode==='star2')return 'star2';
+  if(viewMode==='listStar1')return 'star1';
+  if(viewMode==='listStar2')return 'star2';
   return 'all'
 }
 function flashContextLabel(){
-  return `${currentFile().name} / ${(viewMode==='star1'||viewMode==='star2')?'ファイル全体':currentList().name}`
+  return `${currentFile().name} / ${currentList().name}`
 }
 function startFlashSession(scope=defaultFlashScope()){
   flashState={scope,original:shuffle(flashWordsForScope(scope)),items:[],index:0,known:[],unknown:[],round:1};
@@ -652,8 +620,27 @@ testBtn.onclick=()=>{testDialog.showModal();testEmpty.classList.remove('hidden')
 startTestBtn.onclick=()=>{
   const pool=wordsForView();
   if(pool.length<4){alert('4択テストには対象単語が4語以上必要です。');return}
-  const qs=shuffle(pool).slice(0,Math.min(20,pool.length)).map(ans=>({answer:ans,choices:shuffle([ans,...shuffle(pool.filter(w=>w.id!==ans.id)).slice(0,3)]),sentence:makeSentence(ans)}));
-  testState={questions:qs,index:0,score:0,answered:false};testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQ()
+
+  // 正解と同じ品詞の単語だけを誤答候補にする
+  const viable=pool.filter(ans=>{
+    const type=inferType(ans);
+    return pool.filter(w=>w.id!==ans.id && inferType(w)===type).length>=3
+  });
+  if(!viable.length){
+    alert('同じ品詞の単語が4語以上あるグループが必要です。単語を増やしてから試してください。');
+    return
+  }
+
+  const selected=shuffle(viable).slice(0,Math.min(20,viable.length));
+  const qs=selected.map(ans=>{
+    const type=inferType(ans);
+    const sameType=pool.filter(w=>w.id!==ans.id && inferType(w)===type);
+    const distract=shuffle(sameType).slice(0,3);
+    return {answer:ans,choices:shuffle([ans,...distract]),sentence:makeSentence(ans),type}
+  });
+
+  testState={questions:qs,index:0,score:0,answered:false};
+  testEmpty.classList.add('hidden');testBox.classList.remove('hidden');showQ()
 };
 function showQ(){
   const q=testState.questions[testState.index];testProgress.textContent=`${testState.index+1} / ${testState.questions.length}`;

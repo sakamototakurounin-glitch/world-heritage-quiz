@@ -130,7 +130,9 @@
       .autoViews{margin-top:6px}
       #deckTitle{font-size:20px!important}
       .stickyActions{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
+      .stickyActions.exporting{grid-template-columns:1fr 1fr 1fr 1fr}
       .stickyActions .btn{width:100%;padding:9px 4px;font-size:12px}
+      .stickyActions.exporting .btn{font-size:11px;padding-left:2px;padding-right:2px}
       .mainDeckFilter{margin-top:10px;margin-bottom:8px;padding-top:8px}
       .mainDeckFilter .listFilters{gap:6px}
       .mainDeckFilter .listFilterBtn{padding:8px 3px;font-size:12px}
@@ -190,6 +192,16 @@
       </div>
       <div class="listScroller" id="listScroller"></div>
 
+      <div class="autoViews">
+        <button class="autoBtn" id="fileStar1Btn">
+          <b>★1 統合</b><div class="listMeta" id="star1Count"></div>
+        </button>
+        <button class="autoBtn" id="fileStar2Btn">
+          <b>★★ 統合</b><div class="listMeta" id="star2Count"></div>
+        </button>
+      </div>
+      <div class="help">現在のファイル内にある全単語帳から自動で統合します。</div>
+
 
     </aside>
 
@@ -204,6 +216,7 @@
         </div>
         <div class="stickyActions">
           <button class="btn" id="importBtn">インポート</button>
+          <button class="btn hidden" id="starExportBtn">エクスポート</button>
           <button class="btn" id="flashBtn">カード</button>
           <button class="btn primary" id="testBtn">4択</button>
         </div>
@@ -332,7 +345,7 @@ const LEGACY_KEY='vocabstar_v1';
 let state=loadState();
 let activeFileId=state.files[0].id;
 let activeListId=state.files[0].lists[0].id;
-let viewMode='list'; // list | listStarred | listStar1 | listStar2
+let viewMode='list'; // list | listStarred | listStar1 | listStar2 | star1 | star2
 let nameAction=null;
 let flashState={items:[],index:0};
 let testState=null;
@@ -364,6 +377,8 @@ function currentListWords(){
   return (currentList()?.words||[]).map(w=>({...w,listId:activeListId,listName:currentList()?.name||''}))
 }
 function wordsForView(){
+  if(viewMode==='star1')return fileWords().filter(w=>w.star===1);
+  if(viewMode==='star2')return fileWords().filter(w=>w.star===2);
   const listWords=currentListWords();
   if(viewMode==='listStarred')return listWords.filter(w=>w.star>0);
   if(viewMode==='listStar1')return listWords.filter(w=>w.star===1);
@@ -399,22 +414,39 @@ function render(){
   });
   const fw=fileWords(f);
   const c1=fw.filter(w=>w.star===1).length,c2=fw.filter(w=>w.star===2).length;
+  star1Count.textContent=`${c1}語`;
+  star2Count.textContent=`${c2}語`;
+  fileStar1Btn.classList.toggle('active',viewMode==='star1');
+  fileStar2Btn.classList.toggle('active',viewMode==='star2');
 
 
 
   document.querySelectorAll('.listFilterBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===viewMode));
+  listFilters.closest('.mainDeckFilter').classList.toggle('hidden',viewMode==='star1'||viewMode==='star2');
 
 
-  let title=currentList()?.name||'単語帳';
-  const label=viewMode==='list'?'全て':viewMode==='listStarred'?'★付き':viewMode==='listStar1'?'★1':'★★';
-  const meta=`${f.name} / ${label} ${wordsForView().length}語`;
-  if(viewMode==='list'){modeBadge.classList.add('hidden')}
-  else{modeBadge.textContent=label;modeBadge.classList.remove('hidden')}
+  let title='',meta='';
+  if(viewMode==='star1'||viewMode==='star2'){
+    title=f.name;
+    const label=viewMode==='star1'?'★1 統合':'★★ 統合';
+    meta=`ファイル内の全単語帳から自動統合 / ${wordsForView().length}語`;
+    modeBadge.textContent=label;
+    modeBadge.classList.remove('hidden')
+  }else{
+    title=currentList()?.name||'単語帳';
+    const label=viewMode==='list'?'全て':viewMode==='listStarred'?'★付き':viewMode==='listStar1'?'★1':'★★';
+    meta=`${f.name} / ${label} ${wordsForView().length}語`;
+    if(viewMode==='list'){modeBadge.classList.add('hidden')}
+    else{modeBadge.textContent=label;modeBadge.classList.remove('hidden')}
+  }
   deckTitle.textContent=title;deckMeta.textContent=meta;
 
   const raw=wordsForView();
 
   importBtn.disabled=!viewMode.startsWith('list');
+  const isStarMerged=viewMode==='star1'||viewMode==='star2';
+  starExportBtn.classList.toggle('hidden',!isStarMerged);
+  document.querySelector('.stickyActions')?.classList.toggle('exporting',isStarMerged);
 
   const words=filteredWords();wordBody.innerHTML='';
   words.forEach(w=>{
@@ -516,10 +548,36 @@ document.querySelectorAll('.listFilterBtn').forEach(b=>b.onclick=()=>{
   searchInput.value='';
   render()
 });
+fileStar1Btn.onclick=()=>{viewMode='star1';searchInput.value='';render()};
+fileStar2Btn.onclick=()=>{viewMode='star2';searchInput.value='';render()};
 
+
+/* star merged export */
+function exportStarMerged(){
+  if(viewMode!=='star1'&&viewMode!=='star2')return;
+  const words=wordsForView();
+  if(!words.length){alert('エクスポートする単語がありません。');return}
+
+  const clean=s=>String(s??'').replace(/\t/g,' ').replace(/\r?\n/g,' ');
+  const text=words.map(w=>[clean(w.en),clean(w.jp),clean(w.example||'')].join('\t')).join('\n');
+  const level=viewMode==='star1'?'star1':'star2';
+  const safeFileName=(currentFile()?.name||'VocabStar').replace(/[\\/:*?"<>|]/g,'_');
+  const filename=`${safeFileName}_${level}_merged.tsv`;
+
+  const blob=new Blob([text],{type:'text/tab-separated-values;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 
 /* import */
 importBtn.onclick=()=>{if(!viewMode.startsWith('list'))return;importText.value='';importDialog.showModal()};
+starExportBtn.onclick=exportStarMerged;
 doImportBtn.onclick=()=>{
   const l=currentList(),rows=parseImport(importText.value),seen=new Set(l.words.map(w=>w.en.toLowerCase()));let added=0;
   rows.forEach(r=>{if(!seen.has(r.en.toLowerCase())){l.words.push({id:uid(),...r,star:0});seen.add(r.en.toLowerCase());added++}});
@@ -529,6 +587,7 @@ searchInput.oninput=render;
 
 /* flashcards */
 function flashBaseWords(){
+  if(viewMode==='star1'||viewMode==='star2')return fileWords();
   return currentListWords()
 }
 function flashWordsForScope(scope){
@@ -540,12 +599,12 @@ function flashWordsForScope(scope){
 }
 function defaultFlashScope(){
   if(viewMode==='listStarred')return 'starred';
-  if(viewMode==='listStar1')return 'star1';
-  if(viewMode==='listStar2')return 'star2';
+  if(viewMode==='listStar1'||viewMode==='star1')return 'star1';
+  if(viewMode==='listStar2'||viewMode==='star2')return 'star2';
   return 'all'
 }
 function flashContextLabel(){
-  return `${currentFile().name} / ${currentList().name}`
+  return `${currentFile().name} / ${(viewMode==='star1'||viewMode==='star2')?'ファイル全体':currentList().name}`
 }
 function startFlashSession(scope=defaultFlashScope()){
   flashState={scope,original:shuffle(flashWordsForScope(scope)),items:[],index:0,known:[],unknown:[],round:1};

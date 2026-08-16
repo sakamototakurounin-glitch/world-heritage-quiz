@@ -1,4 +1,4 @@
-const CACHE='vocabstar-cache-v12-file-star-restored';
+const CACHE='vocabstar-cache-v13-rename-position';
 const ASSETS=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([

@@ -59,6 +59,7 @@
     .stats{display:flex;gap:6px;flex-wrap:wrap}
     .pill{font-size:11px;padding:5px 8px;background:#f3f4f6;border-radius:999px}
     .modeBadge{display:inline-flex;font-size:11px;padding:4px 7px;border-radius:999px;background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+    #renameListBtn{font-size:12px;padding:5px 8px}
     .hidden{display:none!important}
     .tableWrap{width:100%;overflow:auto;margin-top:8px}
     table{width:100%;border-collapse:collapse;min-width:650px}
@@ -185,10 +186,7 @@
 
       <div class="subhead">
         <b>単語帳リスト</b>
-        <div class="row" style="gap:5px">
-          <button class="btn small" id="renameListBtn">名前変更</button>
-          <button class="btn small primary" id="addListBtn">＋単語帳</button>
-        </div>
+        <button class="btn small primary" id="addListBtn">＋単語帳</button>
       </div>
       <div class="listScroller" id="listScroller"></div>
 
@@ -210,6 +208,7 @@
         <div class="grow">
           <div class="row">
             <h2 id="deckTitle" style="margin:0">単語帳</h2>
+            <button class="btn small" id="renameListBtn">名前変更</button>
             <span class="modeBadge hidden" id="modeBadge"></span>
           </div>
           <div class="muted" id="deckMeta"></div>
@@ -406,7 +405,7 @@ function render(){
   f.lists.forEach(l=>{
     const wrap=document.createElement('div');
     wrap.className='listWrap '+(viewMode.startsWith('list')&&l.id===activeListId?'active':'');
-    wrap.innerHTML=`<button class="listBtn"><div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div></button><div class="listActions"><button class="iconbtn listRename" title="名前変更">✎</button><button class="iconbtn listDelete" title="削除">×</button></div>`;
+    wrap.innerHTML=`<button class="listBtn"><div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div></button><div class="listActions"><button class="iconbtn listDelete" title="削除">×</button></div>`;
     wrap.querySelector('.listBtn').onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
     wrap.querySelector('.listRename').onclick=()=>renameList(l.id);
     wrap.querySelector('.listDelete').onclick=()=>deleteList(l.id);

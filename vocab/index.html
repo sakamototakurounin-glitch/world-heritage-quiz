@@ -419,7 +419,6 @@ function render(){
     wrap.className='listWrap '+(viewMode.startsWith('list')&&l.id===activeListId?'active':'');
     wrap.innerHTML=`<button class="listBtn"><div class="listTitle">${esc(l.name)}</div><div class="listMeta">${l.words.length}語</div></button><div class="listActions"><button class="iconbtn listDelete" title="削除">×</button></div>`;
     wrap.querySelector('.listBtn').onclick=()=>{activeListId=l.id;viewMode='list';searchInput.value='';render()};
-    wrap.querySelector('.listRename').onclick=()=>renameList(l.id);
     wrap.querySelector('.listDelete').onclick=()=>deleteList(l.id);
     listScroller.appendChild(wrap)
   });

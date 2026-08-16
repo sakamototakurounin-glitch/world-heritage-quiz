@@ -1,4 +1,4 @@
-const CACHE='vocabstar-cache-v14-recovery';
+const CACHE='vocabstar-cache-v15-display-fix';
 const ASSETS=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([

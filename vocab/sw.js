@@ -1,12 +1,47 @@
-const CACHE='vocabstar-cache-v15-display-fix';
-const ASSETS=['./','./index.html','./manifest.webmanifest'];
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
+const CACHE='vocabstar-cache-v16-image-import';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./image-import.js'];
+
+async function injectImageImport(resp){
+  const type=resp.headers.get('content-type')||'';
+  if(!type.includes('text/html'))return resp;
+  const html=await resp.text();
+  const patched=html.includes('image-import.js')
+    ? html
+    : html.replace('</body>','<script src="./image-import.js"></script></body>');
+  const headers=new Headers(resp.headers);
+  headers.delete('content-length');
+  return new Response(patched,{
+    status:resp.status,
+    statusText:resp.statusText,
+    headers
+  });
+}
+
+self.addEventListener('install',e=>{
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+});
+
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([
   caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),
   self.clients.claim()
 ])));
+
 self.addEventListener('fetch',e=>{
-  e.respondWith(fetch(e.request).then(resp=>{
-    const copy=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return resp
-  }).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))))
+  e.respondWith((async()=>{
+    try{
+      const network=await fetch(e.request);
+      const response=e.request.mode==='navigate'
+        ? await injectImageImport(network)
+        : network;
+      const copy=response.clone();
+      caches.open(CACHE).then(c=>c.put(e.request,copy)).catch(()=>{});
+      return response;
+    }catch(err){
+      let cached=await caches.match(e.request);
+      if(!cached&&e.request.mode==='navigate')cached=await caches.match('./index.html');
+      if(cached&&e.request.mode==='navigate')return injectImageImport(cached);
+      return cached||Response.error();
+    }
+  })());
 });
